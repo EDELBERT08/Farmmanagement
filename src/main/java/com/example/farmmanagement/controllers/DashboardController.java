@@ -10,6 +10,7 @@ import com.example.farmmanagement.service.CropActivityService;
 import com.example.farmmanagement.service.CropService;
 import com.example.farmmanagement.service.CropTransactionService;
 import com.example.farmmanagement.service.FieldService;
+import com.example.farmmanagement.service.AiService;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.stereotype.Controller;
@@ -26,14 +27,16 @@ public class DashboardController {
     private final FieldService fieldService;
     private final CropTransactionService transactionService;
     private final CropActivityService activityService;
+    private final AiService aiService;
 
     public DashboardController(CropService cropService, AnimalService animalService, FieldService fieldService,
-            CropTransactionService transactionService, CropActivityService activityService) {
+            CropTransactionService transactionService, CropActivityService activityService, AiService aiService) {
         this.cropService = cropService;
         this.animalService = animalService;
         this.fieldService = fieldService;
         this.transactionService = transactionService;
         this.activityService = activityService;
+        this.aiService = aiService;
     }
 
     // Handles requests to "/home"
@@ -54,6 +57,17 @@ public class DashboardController {
         model.addAttribute("globalExpense", globalExpense);
         model.addAttribute("globalIncome", globalIncome);
         model.addAttribute("globalProfit", globalProfit);
+
+        // Chart Data
+        model.addAttribute("cropDistribution", cropService.getCropTypeDistribution());
+
+        // AI Insights
+        model.addAttribute("farmInsights", aiService.getFarmSummary());
+
+        // Mock Data for UI (To be replaced with real services later)
+        model.addAttribute("weatherLocation", "Chicago, IL");
+        model.addAttribute("weatherTemp", "24");
+        model.addAttribute("weatherCondition", "Sunny");
 
         return "index";
     }
@@ -95,6 +109,10 @@ public class DashboardController {
         model.addAttribute("newActivity", new CropActivity());
         model.addAttribute("pageTitle", "Crop Details: " + crop.getType());
         model.addAttribute("activePage", "crop");
+
+        // AI Insights for Crop
+        model.addAttribute("cropInsights", aiService.getCropInsights(crop));
+
         return "crop-details";
     }
 

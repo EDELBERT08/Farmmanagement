@@ -1,107 +1,137 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Crop Management</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<head th:replace="~{fragments/layout :: head('Crop Management - FarmVista')}">
 </head>
 
 <body>
 
-    <header>
-        <h1>CROPS</h1>
-    </header>
+    <div layout:fragment="content">
+        <!-- Re-initialize header for this specific page context if needed, or rely on layout's header -->
+        <!-- Since layout header uses th:fragment="header(title, subtitle)", we can explicitly replace it if we want custom title params
+             OR we can just let the layout handle generic ones. The layout currently assumes we pass title/subtitle. 
+             Wait, the layout html defined header fragment but didn't actually USE it in the layout body, it just defined it. 
+             We need to actually include the header in the layout.html body OR include it here. 
+             
+             Correction: I should have put `th:replace` inside the layout body or made the layout body encompass the header.
+             Let's check layout.html again. It has <header ... th:fragment="header...">.
+             If I use layout:decorate, the content inside this <div> will be injected into layout's `content` fragment.
+             I need to make sure the layout *calls* the header fragment.
+             
+             Actually, standard Thymeleaf Layout dialect usage:
+             Layout has:
+             <body>
+               <div th:replace="~{fragments/layout :: sidebar}"></div>
+               <div class="main-content">
+                  <header th:replace="~{fragments/layout :: header(...)}"></header>
+                  <div layout:fragment="content"></div>
+               </div>
+             </body>
+             
+             My previous layout.html definition was just defining fragments, not a full decorative layout.
+             Let me FIX layout.html first to be a proper Decorator.
+        -->
 
-    <nav class="tab-nav">
-        <ul>
-            <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">Home</a></li>
+        <div class="page-container">
+            <!-- Add New Crop Card -->
+            <div class="card-panel">
+                <h3 class="card-title">Add New Crop</h3>
+                <form class="modern-form" th:action="@{/crop/add}" th:object="${newCrop}" method="post">
+                    <div class="form-group">
+                        <label for="type">Type of Crop</label>
+                        <input type="text" class="form-control" id="type" th:field="*{type}" required
+                            placeholder="e.g., Maize, Beans">
+                    </div>
+                    <div class="form-group">
+                        <label for="field">Field Assignment</label>
+                        <select class="form-control" id="field" th:field="*{field}" required>
+                            <option value="">-- Select a Field --</option>
+                            <option th:each="field : ${fields}" th:value="${field.id}"
+                                th:text="${field.name + ' (' + field.areaSize + ' Acres)'}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="landSize">Land Size (Hectares)</label>
+                        <input type="number" class="form-control" id="landSize" th:field="*{landSize}" step="any"
+                            min="0" placeholder="0.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="plantingDate">Planting Date</label>
+                        <input type="date" class="form-control" id="plantingDate" th:field="*{plantingDate}">
+                    </div>
+                    <div class="form-group">
+                        <label for="harvestDate">Est. Harvest Date</label>
+                        <input type="date" class="form-control" id="harvestDate" th:field="*{harvestDate}">
+                    </div>
+                    <div class="form-group">
+                        <label for="pesticides">Pesticides / Treatments</label>
+                        <input type="text" class="form-control" id="pesticides" th:field="*{pesticides}"
+                            placeholder="e.g., Organic Fertilizer">
+                    </div>
 
-        </ul>
-    </nav>
-
-    <main class="content management-content">
-        <h2 th:text="${pageTitle}">Crop Management</h2>
-
-        <h3>Add New Crop</h3>
-        <form class="crop-form" th:action="@{/crop/add}" th:object="${newCrop}" method="post">
-            <div class="form-group">
-                <label for="type">Type of Crop:</label>
-                <input type="text" id="type" th:field="*{type}" required placeholder="e.g., Maize, Beans">
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Add Crop
+                    </button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="field">Field:</label>
-                <select id="field" th:field="*{field}" required>
-                    <option value="">Select a Field</option>
-                    <option th:each="field : ${fields}" th:value="${field.id}"
-                        th:text="${field.name + ' (' + field.areaSize + ' Acres)'}"></option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="landSize">Land Size (Hectares):</label>
-                <input type="number" id="landSize" th:field="*{landSize}" step="any" min="0" placeholder="e.g., 1.5">
-            </div>
-            <div class="form-group">
-                <label for="plantingDate">Planting Date:</label>
-                <input type="date" id="plantingDate" th:field="*{plantingDate}">
-            </div>
-            <div class="form-group">
-                <label for="harvestDate">Estimate Harvest Date:</label>
-                <input type="date" id="harvestDate" th:field="*{harvestDate}">
-            </div>
-            <div class="form-group">
-                <label for="pesticides">Pesticides Used:</label>
-                <input type="text" id="pesticides" th:field="*{pesticides}" placeholder="e.g., None, Specific Brand">
-            </div>
 
-            <button type="submit">Add Crop</button>
-        </form>
+            <!-- Existing Crops -->
+            <div class="card-panel">
+                <h3 class="card-title">Current Crop Inventory</h3>
 
-        <hr class="section-divider">
+                <div th:if="${crops == null || crops.isEmpty()}" style="text-align:center; padding:2rem; color:#888;">
+                    <i class="fa-solid fa-wheat-awn" style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"></i>
+                    <p>No crops recorded yet. Add one above to get started!</p>
+                </div>
 
-        <h3>Current Crop List</h3>
-
-        <div th:if="${crops == null || crops.isEmpty()}">
-            <p>No crops have been added yet.</p>
+                <div class="table-responsive" th:if="${crops != null && !crops.isEmpty()}">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Crop Type</th>
+                                <th>Field</th>
+                                <th>Size (Ha)</th>
+                                <th>Planting Date</th>
+                                <th>Est. Harvest</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="crop : ${crops}">
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div
+                                            style="width:35px; height:35px; background:#e8f5e9; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#2e7d32;">
+                                            <i class="fa-solid fa-leaf"></i>
+                                        </div>
+                                        <span th:text="${crop.type}" style="font-weight:600;">Wheat</span>
+                                    </div>
+                                </td>
+                                <td th:text="${crop.field != null ? crop.field.name : 'Unassigned'}">North Field</td>
+                                <td th:text="${#numbers.formatDecimal(crop.landSize, 1, 2, 'COMMA')}">5.0</td>
+                                <td
+                                    th:text="${crop.plantingDate != null ? #temporals.format(crop.plantingDate, 'MMM dd, yyyy') : '-'}">
+                                    Mar 15, 2025</td>
+                                <td
+                                    th:text="${crop.harvestDate != null ? #temporals.format(crop.harvestDate, 'MMM dd, yyyy') : '-'}">
+                                    Aug 20, 2025</td>
+                                <td>
+                                    <span class="status-badge badge-success">Active</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/crop/{id}(id=${crop.id})}" class="action-btn">
+                                        View Details <i class="fa-solid fa-arrow-right" style="font-size:0.8em;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
-        <div th:if="${crops != null && !crops.isEmpty()}">
-            <table class="crop-table">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Field</th>
-                        <th>Land Size (Ha)</th>
-                        <th>Planting Date</th>
-                        <th>Est. Harvest Date</th>
-                        <th>Pesticides</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="crop : ${crops}">
-                        <td th:text="${crop.type}">Wheat</td>
-                        <td th:text="${crop.field != null ? crop.field.name : 'Unassigned'}">North Field</td>
-                        <td th:text="${#numbers.formatDecimal(crop.landSize, 1, 2, 'COMMA')}">5.0</td>
-                        <td
-                            th:text="${crop.plantingDate != null ? #temporals.format(crop.plantingDate, 'yyyy-MM-dd') : 'N/A'}">
-                            2025-03-15</td>
-                        <td
-                            th:text="${crop.harvestDate != null ? #temporals.format(crop.harvestDate, 'yyyy-MM-dd') : 'N/A'}">
-                            2025-08-20</td>
-                        <td th:text="${crop.pesticides}">Roundup</td>
-                        <td><a th:href="@{/crop/{id}(id=${crop.id})}" class="btn-details">View Details</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-    </main>
-
-    <footer>
-        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Dashboard</p>
-    </footer>
+    </div>
 
 </body>
 

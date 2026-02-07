@@ -1,138 +1,194 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farm Dashboard</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
-    <!-- Chart.js for Analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
-        integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
-        crossorigin="anonymous"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<head th:replace="~{fragments/layout :: head('Dashboard - FarmVista')}">
 </head>
 
 <body>
 
-    <header>
-        <h1>Farm Management System</h1>
-    </header>
+    <!-- Main Content replaced by layout -->
+    <div layout:fragment="content">
+        <!-- Dashboard Grid -->
+        <div class="dashboard-container">
 
-    <nav class="tab-nav" style="display: flex; justify-content: space-between; align-items: center;">
-        <ul style="display: flex; gap: 15px; margin: 0; padding: 0;">
-            <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">DASHBOARD</a></li>
-            <li><a th:href="@{/field}" th:classappend="${activePage == 'field'} ? 'active' : ''">FIELDS</a></li>
-            <li><a th:href="@{/crop}" th:classappend="${activePage == 'crop'} ? 'active' : ''">CROPS</a></li>
-            <li><a th:href="@{/animal}" th:classappend="${activePage == 'animal'} ? 'active' : ''">ANIMALS</a></li>
-            <li><a th:href="@{/produce}" th:classappend="${activePage == 'produce'} ? 'active' : ''">PRODUCE</a></li>
-        </ul>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span th:text="${'Welcome, ' + #authentication.name}" style="font-weight: bold; color: #508D4E;">User</span>
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit"
-                    style="background: none; border: 1px solid #c0392b; color: #c0392b; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Logout</button>
-            </form>
-        </div>
-    </nav>
-
-    <main class="content dashboard-container">
-        <div class="welcome-section">
-            <h2 th:text="'Hello, Farmer!'">Hello, Farmer!</h2>
-            <p>Here is your farm's performance overview.</p>
-        </div>
-
-        <!-- 1. Key Statistics Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Crops</h3>
-                <p class="stat-number" th:text="${totalCrops}">0</p>
-                <span class="stat-label">Active Plantings</span>
-            </div>
-            <div class="stat-card">
-                <h3>Total Animals</h3>
-                <p class="stat-number" th:text="${totalAnimals}">0</p>
-                <span class="stat-label">Livestock Count</span>
-            </div>
-            <div class="stat-card income-card">
-                <h3>Total Income</h3>
-                <p class="stat-number money" th:text="${#numbers.formatCurrency(globalIncome)}">$0.00</p>
-                <span class="stat-label">YTD Revenue</span>
-            </div>
-            <div class="stat-card expense-card">
-                <h3>Total Expenses</h3>
-                <p class="stat-number money" th:text="${#numbers.formatCurrency(globalExpense)}">$0.00</p>
-                <span class="stat-label">YTD Costs</span>
-            </div>
-        </div>
-
-        <!-- 2. Main Dashboard Layout -->
-        <div class="dashboard-main">
-            <!-- Chart Section -->
-            <div class="chart-container">
-                <h3>Financial Overview</h3>
-                <canvas id="financeChart"></canvas>
-            </div>
-
-            <!-- Quick Actions & Recent Activity -->
-            <div class="action-panel">
-                <h3>Quick Actions</h3>
-                <div class="quick-buttons">
-                    <a th:href="@{/crop}" class="btn-action">Add New Crop</a>
-                    <a th:href="@{/field}" class="btn-action">Manage Fields</a>
-                    <a th:href="@{/animal}" class="btn-action">Register Animal</a>
+            <!-- Weather Widget -->
+            <div class="weather-widget">
+                <div class="weather-info">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <i class="fa-solid fa-cloud-sun" style="font-size:3rem;"></i>
+                        <div>
+                            <h3 th:text="${weatherTemp + '°C'}">24°C</h3>
+                            <span th:text="${weatherCondition}">Sunny</span>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="financial-summary">
-                    <h3>Net Profit</h3>
-                    <p class="net-profit" th:classappend="${globalProfit >= 0} ? 'profit-positive' : 'profit-negative'"
-                        th:text="${#numbers.formatCurrency(globalProfit)}">$0.00</p>
+                <div class="weather-details">
+                    <div class="weather-item">
+                        <i class="fa-solid fa-wind"></i>
+                        <p>12 km/h</p>
+                    </div>
+                    <div class="weather-item">
+                        <i class="fa-solid fa-droplet"></i>
+                        <p>45%</p>
+                    </div>
+                    <div class="weather-item">
+                        <div style="background:rgba(255,255,255,0.2); padding:5px 15px; border-radius:30px;">
+                            <span th:text="${weatherLocation}">Chicago, US</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- AI Insight (If Available) -->
+            <div class="weather-widget" style="background: linear-gradient(135deg, #2196F3, #64B5F6);"
+                th:if="${farmInsights != null}">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <i class="fa-solid fa-lightbulb" style="font-size:2.5rem; color:#FFD700;"></i>
+                    <div>
+                        <h4 style="margin:0 0 5px 0;">Smart Farm Insight</h4>
+                        <p style="margin:0; font-weight:400;" th:text="${farmInsights}">Insight loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Container -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Total Crops</h4>
+                        <p th:text="${totalCrops}">0</p>
+                    </div>
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Livestock</h4>
+                        <p th:text="${totalAnimals}">0</p>
+                    </div>
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Total Income</h4>
+                        <p th:text="${#numbers.formatCurrency(globalIncome)}">$0.00</p>
+                    </div>
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Net Profit</h4>
+                        <p th:text="${#numbers.formatCurrency(globalProfit)}"
+                            th:style="${globalProfit >= 0} ? 'color:#4CAF50' : 'color:#d32f2f'">$0.00</p>
+                    </div>
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Side Panel -->
+            <div class="chart-section">
+                <h3 style="margin-top:0;">Production Overview</h3>
+                <canvas id="productionChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <div class="side-panel">
+                <div class="production-card">
+                    <h3 style="margin-top:0; font-size:1.1rem; margin-bottom:1rem;">Upcoming Tasks</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div>
+                                <span style="display:block; font-weight:600; font-size:0.9rem;">Fertilize Corn
+                                    Field</span>
+                                <span style="font-size:0.8rem; color:#888;">Due Today</span>
+                            </div>
+                            <span class="task-status status-pending">Pending</span>
+                        </li>
+                        <li class="task-item">
+                            <div>
+                                <span style="display:block; font-weight:600; font-size:0.9rem;">Safety Inspection</span>
+                                <span style="font-size:0.8rem; color:#888;">Tomorrow</span>
+                            </div>
+                            <span class="task-status status-pending">Pending</span>
+                        </li>
+                        <li class="task-item">
+                            <div>
+                                <span style="display:block; font-weight:600; font-size:0.9rem;">Harvest Wheat</span>
+                                <span style="font-size:0.8rem; color:#888;">Complete</span>
+                            </div>
+                            <span class="task-status status-done">Done</span>
+                        </li>
+                    </ul>
+                    <a href="#"
+                        style="display:block; text-align:center; margin-top:1rem; color:var(--primary-color); text-decoration:none; font-weight:600; font-size:0.9rem;">View
+                        All Tasks</a>
+                </div>
+            </div>
+
         </div>
 
-    </main>
+        <script th:inline="javascript">
+            // Chart Data from Backend
+            const cropData = [[${ cropDistribution }]];
 
-    <footer>
-        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Management Solutions</p>
-    </footer>
+            const ctx = document.getElementById('productionChart').getContext('2d');
 
-    <!-- Chart Initialization Script -->
-    <script th:inline="javascript">
-        const ctx = document.getElementById('financeChart').getContext('2d');
-        const income = [[${ globalIncome }]];
-        const expense = [[${ globalExpense }]];
+            const labels = Object.keys(cropData);
+            const data = Object.values(cropData);
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Income', 'Expenses'],
-                datasets: [{
-                    label: 'Amount ($)',
-                    data: [income, expense],
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.6)', // Green for Income
-                        'rgba(255, 99, 132, 0.6)'  // Red for Expense
-                    ],
-                    borderColor: [
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            // Colors generator
+            const bgColors = [
+                'rgba(76, 175, 80, 0.7)',
+                'rgba(255, 193, 7, 0.7)',
+                'rgba(33, 150, 243, 0.7)',
+                'rgba(156, 39, 176, 0.7)',
+                'rgba(244, 67, 54, 0.7)'
+            ];
+
+            new Chart(ctx, {
+                type: 'bar', // Can be 'doughnut' or 'bar'
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Crops'],
+                    datasets: [{
+                        label: 'Crop Count by Type',
+                        data: data.length > 0 ? data : [0],
+                        backgroundColor: bgColors,
+                        borderRadius: 5,
+                        borderWidth: 0
+                    }]
                 },
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    </script>
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
 
 </body>
 

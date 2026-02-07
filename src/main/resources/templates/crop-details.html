@@ -1,264 +1,217 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
 
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${pageTitle}">Crop Details</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .summary-box {
-            display: flex;
-            justify-content: space-around;
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        .money {
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .expense {
-            color: #d9534f;
-        }
-
-        .income {
-            color: #5cb85c;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-
-        button {
-            padding: 10px 15px;
-            background-color: #0275d8;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #025aa5;
-        }
-
-        .nav {
-            margin-bottom: 20px;
-        }
-
-        .nav a {
-            margin-right: 15px;
-            text-decoration: none;
-            color: #333;
-        }
-    </style>
+<head th:replace="~{fragments/layout :: head(${crop.type} + ' Details - FarmVista')}">
 </head>
 
 <body>
 
-    <div class="container">
-        <div class="nav">
-            <a href="/crop">Back to Crops</a>
-            <a href="/">Home</a>
-        </div>
+    <div layout:fragment="content">
+        <div class="page-container">
+            <div style="margin-bottom: 1rem;">
+                <a th:href="@{/crop}" class="action-btn" style="display:inline-flex; align-items:center; gap:5px;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Crops
+                </a>
+            </div>
 
-        <h1 th:text="${crop.type} + ' Details'">Crop Details</h1>
-
-        <!-- Crop Info Card -->
-        <div class="card">
-            <h3>General Information</h3>
-            <p><strong>Field:</strong> <span th:text="${crop.field != null ? crop.field.name : 'Unassigned'}">North
-                    Field</span></p>
-            <p><strong>Land Size:</strong> <span th:text="${crop.landSize}">5.0</span> Acres</p>
-            <p><strong>Planting Date:</strong> <span th:text="${crop.plantingDate}">2025-01-01</span></p>
-            <p><strong>Est. Harvest:</strong> <span th:text="${crop.harvestDate}">2025-06-01</span></p>
-        </div>
-
-        <!-- Financial Summary -->
-        <div class="card">
-            <h3>Financial Overview</h3>
-            <div class="summary-box">
-                <div>
-                    <span>Total Expenses:</span><br>
-                    <span class="money expense" th:text="${#numbers.formatCurrency(totalExpense)}">$0.00</span>
-                </div>
-                <div>
-                    <span>Total Income:</span><br>
-                    <span class="money income" th:text="${#numbers.formatCurrency(totalIncome)}">$0.00</span>
-                </div>
-                <div>
-                    <span>Net Profit:</span><br>
-                    <span class="money" th:style="${(totalIncome - totalExpense) >= 0 ? 'color:green' : 'color:red'}"
-                        th:text="${#numbers.formatCurrency(totalIncome - totalExpense)}">$0.00</span>
+            <!-- Crop Overview Card -->
+            <div class="card-panel">
+                <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:20px;">
+                    <div>
+                        <h2 style="margin:0; color:var(--primary-dark);" th:text="${crop.type} + ' Details'">Crop
+                            Details</h2>
+                        <div
+                            style="display:flex; gap:15px; margin-top:10px; color:#666; font-size:0.95rem; flex-wrap:wrap;">
+                            <span><i class="fa-solid fa-map-pin"></i> <span
+                                    th:text="${crop.field != null ? crop.field.name : 'Unassigned'}">Field</span></span>
+                            <span><i class="fa-solid fa-ruler-combined"></i> <span th:text="${crop.landSize}">0</span>
+                                Ha</span>
+                            <span><i class="fa-solid fa-calendar-check"></i> Planted: <span
+                                    th:text="${crop.plantingDate}">-</span></span>
+                            <span><i class="fa-solid fa-calendar-xmark"></i> Harvest: <span
+                                    th:text="${crop.harvestDate}">-</span></span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="status-badge badge-success" style="font-size:1rem; padding:8px 15px;">Active
+                            Season</span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Dashboard Grid for Details -->
+            <div class="dashboard-container" style="padding:0; margin-bottom:2rem;">
+
+                <!-- Financial Stats -->
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Total Expenses</h4>
+                        <p th:text="${#numbers.formatCurrency(totalExpense)}">$0.00</p>
+                    </div>
+                    <div class="stat-icon" style="background:#ffebee; color:#d32f2f;">
+                        <i class="fa-solid fa-arrow-trend-down"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Total Income</h4>
+                        <p th:text="${#numbers.formatCurrency(totalIncome)}">$0.00</p>
+                    </div>
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h4>Net Profit</h4>
+                        <p th:text="${#numbers.formatCurrency(totalIncome - totalExpense)}"
+                            th:style="${(totalIncome - totalExpense) >= 0} ? 'color:#4CAF50' : 'color:#d32f2f'">$0.00
+                        </p>
+                    </div>
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                </div>
+
+                <!-- AI Insight -->
+                <div class="stat-card" style="background: linear-gradient(135deg, #E3F2FD, #BBDEFB);"
+                    th:if="${cropInsights != null}">
+                    <div class="stat-info">
+                        <h4 style="color:#1565C0;">AI Insight</h4>
+                        <p style="font-size:0.9rem; font-weight:400; line-height:1.4;" th:text="${cropInsights}">
+                            Insight...</p>
+                    </div>
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                </div>
+
+                <!-- Transactions Table (Span 8) -->
+                <div class="chart-section" style="grid-column: span 8;">
+                    <h3 class="card-title">Financial Transactions</h3>
+                    <div class="table-responsive">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="t : ${transactions}">
+                                    <td th:text="${t.transactionDate}">2025-01-01</td>
+                                    <td th:text="${t.description}">Seeds</td>
+                                    <td th:text="${t.transactionType}"
+                                        th:style="${t.transactionType == T(com.example.farmmanagement.model.CropTransaction.TransactionType).EXPENSE ? 'color:#d32f2f; font-weight:600;' : 'color:#2e7d32; font-weight:600;'}">
+                                        EXPENSE</td>
+                                    <td th:text="${#numbers.formatCurrency(t.amount)}">$100.00</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(transactions)}">
+                                    <td colspan="4" style="text-align:center; color:#888; padding:2rem;">No financial
+                                        records found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Activity Timeline (Span 4) -->
+                <div class="side-panel">
+                    <div class="card-panel" style="height:100%; margin-bottom:0;">
+                        <h3 class="card-title">Activity Log</h3>
+                        <div class="timeline" th:if="${!#lists.isEmpty(activities)}">
+                            <div class="timeline-item" th:each="a : ${activities}">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-date" th:text="${a.activityDate}">2025-01-05</span>
+                                    <span class="timeline-title" th:text="${a.activityType}">Planting</span>
+                                    <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;" th:text="${a.details}">
+                                        Details here</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p th:if="${#lists.isEmpty(activities)}" style="color: #999; text-align: center;">No activities
+                            recorded.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Forms Section -->
+            <div class="card-panel">
+                <h3 class="card-title">Record Data</h3>
+                <div class="dashboard-container" style="padding:0; gap:30px;">
+
+                    <!-- Add Transaction -->
+                    <div style="grid-column: span 6;">
+                        <h4 style="margin-top:0; color:#555;">Add Financial Record</h4>
+                        <form class="modern-form" th:action="@{/crop/{id}/transaction/add(id=${crop.id})}"
+                            th:object="${newTransaction}" method="post" style="grid-template-columns: 1fr;">
+                            <div class="form-group">
+                                <label>Transaction Type</label>
+                                <select class="form-control" th:field="*{transactionType}">
+                                    <option value="EXPENSE">Expense (Cost)</option>
+                                    <option value="INCOME">Income (Revenue)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount</label>
+                                <input type="number" step="0.01" class="form-control" th:field="*{amount}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" class="form-control" th:field="*{transactionDate}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" class="form-control" th:field="*{description}"
+                                    placeholder="e.g. Sold Wheat">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Add
+                                Transaction</button>
+                        </form>
+                    </div>
+
+                    <!-- Add Activity -->
+                    <div style="grid-column: span 6;">
+                        <h4 style="margin-top:0; color:#555;">Record Activity</h4>
+                        <form class="modern-form" th:action="@{/crop/{id}/activity/add(id=${crop.id})}"
+                            th:object="${newActivity}" method="post" style="grid-template-columns: 1fr;">
+                            <div class="form-group">
+                                <label>Activity Type</label>
+                                <select class="form-control" th:field="*{activityType}">
+                                    <option value="Planting">Planting</option>
+                                    <option value="Spraying">Spraying Pesticides</option>
+                                    <option value="Fertilizing">Applying Fertilizer</option>
+                                    <option value="Irrigation">Irrigation</option>
+                                    <option value="Weeding">Weeding</option>
+                                    <option value="Harvesting">Harvesting</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" class="form-control" th:field="*{activityDate}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Details</label>
+                                <input type="text" class="form-control" th:field="*{details}"
+                                    placeholder="e.g. Applied Urea">
+                            </div>
+                            <div style="height: 76px;"></div> <!-- Spacer to align buttons -->
+                            <button type="submit" class="btn-primary"
+                                style="width:100%; justify-content:center; background-color: var(--secondary-color); color:black;">Record
+                                Activity</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
-
-        <!-- Add Transaction Form -->
-        <div class="card">
-            <h3>Add Financial Record</h3>
-            <form action="#" th:action="@{/crop/{id}/transaction/add(id=${crop.id})}" th:object="${newTransaction}"
-                method="post">
-                <div class="form-group">
-                    <label for="type">Transaction Type:</label>
-                    <select id="type" th:field="*{transactionType}">
-                        <option value="EXPENSE">Expense (Cost)</option>
-                        <option value="INCOME">Income (Return)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="amount">Amount:</label>
-                    <input type="number" step="0.01" id="amount" th:field="*{amount}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" th:field="*{transactionDate}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="desc">Description:</label>
-                    <input type="text" id="desc" th:field="*{description}"
-                        placeholder="e.g., Bought Seeds, Sold Harvest">
-                </div>
-
-                <button type="submit">Add Record</button>
-            </form>
-        </div>
-
-        <!-- Transaction History -->
-        <h3>Transaction History</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="t : ${transactions}">
-                    <td th:text="${t.transactionDate}">2025-01-01</td>
-                    <td th:text="${t.description}">Seeds</td>
-                    <td th:text="${t.transactionType}"
-                        th:style="${t.transactionType == T(com.example.farmmanagement.model.CropTransaction.TransactionType).EXPENSE ? 'color:red' : 'color:green'}">
-                        EXPENSE</td>
-                    <td th:text="${#numbers.formatCurrency(t.amount)}">$100.00</td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(transactions)}">
-                    <td colspan="4" style="text-align:center;">No financial records yet.</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Section Divider -->
-        <hr style="margin: 30px 0;">
-
-        <!-- Add Activity Form -->
-        <div class="card">
-            <h3>Record Crop Activity</h3>
-            <form action="#" th:action="@{/crop/{id}/activity/add(id=${crop.id})}" th:object="${newActivity}"
-                method="post">
-                <div class="form-group">
-                    <label for="actType">Activity Type:</label>
-                    <select id="actType" th:field="*{activityType}">
-                        <option value="Planting">Planting</option>
-                        <option value="Spraying">Spraying Pesticides</option>
-                        <option value="Fertilizing">Applying Fertilizer</option>
-                        <option value="Irrigation">Irrigation</option>
-                        <option value="Weeding">Weeding</option>
-                        <option value="Harvesting">Harvesting</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="actDate">Date:</label>
-                    <input type="date" id="actDate" th:field="*{activityDate}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="actDetails">Details:</label>
-                    <input type="text" id="actDetails" th:field="*{details}"
-                        placeholder="e.g., Sprayed RoundUp, Applied NPK">
-                </div>
-
-                <button type="submit" style="background-color: #f0ad4e;">Record Activity</button>
-            </form>
-        </div>
-
-        <!-- Activity History -->
-        <h3>Activity Log</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Activity</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="a : ${activities}">
-                    <td th:text="${a.activityDate}">2025-01-05</td>
-                    <td th:text="${a.activityType}">Running</td>
-                    <td th:text="${a.details}">Moved cows</td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(activities)}">
-                    <td colspan="3" style="text-align:center;">No activities recorded yet.</td>
-                </tr>
-            </tbody>
-        </table>
-
     </div>
 
 </body>

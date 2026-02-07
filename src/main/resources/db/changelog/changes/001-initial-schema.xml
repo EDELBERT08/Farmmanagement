@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-field-table" author="farm-admin">
+        <createTable tableName="field">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="area_size" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="002-create-crop-table" author="farm-admin">
+        <createTable tableName="crop">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="land_size" type="DOUBLE"/>
+            <column name="planting_date" type="DATE"/>
+            <column name="harvest_date" type="DATE"/>
+            <column name="pesticides" type="VARCHAR(255)"/>
+            <column name="field_id" type="BIGINT">
+                <constraints foreignKeyName="fk_crop_field" references="field(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="003-create-animal-table" author="farm-admin">
+        <createTable tableName="animal">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="breed" type="VARCHAR(255)"/>
+            <column name="age" type="INT"/>
+            <column name="health_status" type="VARCHAR(255)"/>
+            <column name="acquisition_date" type="DATE"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="004-create-crop-transaction-table" author="farm-admin">
+        <createTable tableName="crop_transaction">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_type" type="VARCHAR(50)"/>
+            <column name="amount" type="DECIMAL(10,2)"/>
+            <column name="transaction_date" type="DATE"/>
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="crop_id" type="BIGINT">
+                <constraints foreignKeyName="fk_transaction_crop" references="crop(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="005-create-crop-activity-table" author="farm-admin">
+        <createTable tableName="crop_activity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="activity_type" type="VARCHAR(255)"/>
+            <column name="activity_date" type="DATE"/>
+            <column name="details" type="VARCHAR(500)"/>
+            <column name="crop_id" type="BIGINT">
+                <constraints foreignKeyName="fk_activity_crop" references="crop(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="006-create-user-table" author="farm-admin">
+        <createTable tableName="user">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="007-add-indexes" author="farm-admin">
+        <createIndex indexName="idx_crop_field" tableName="crop">
+            <column name="field_id"/>
+        </createIndex>
+        <createIndex indexName="idx_transaction_crop" tableName="crop_transaction">
+            <column name="crop_id"/>
+        </createIndex>
+        <createIndex indexName="idx_activity_crop" tableName="crop_activity">
+            <column name="crop_id"/>
+        </createIndex>
+        <createIndex indexName="idx_user_username" tableName="user">
+            <column name="username"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

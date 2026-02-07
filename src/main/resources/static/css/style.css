@@ -10,7 +10,8 @@ body {
 
 /* Header Styling */
 header {
-    background-color: #508D4E; /* Greenish */
+    background-color: #508D4E;
+    /* Greenish */
     color: #fff;
     padding: 1rem 2rem;
     text-align: center;
@@ -26,19 +27,23 @@ header h1 {
 .tab-nav {
     background-color: #e2e2e2;
     padding: 0.5rem 2rem;
-    border-bottom: 3px solid #508D4E; /* Greenish border */
+    border-bottom: 3px solid #508D4E;
+    /* Greenish border */
 }
 
 .tab-nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex; /* Arrange tabs horizontally */
-    gap: 15px; /* Space between tabs */
+    display: flex;
+    /* Arrange tabs horizontally */
+    gap: 15px;
+    /* Space between tabs */
 }
 
 .tab-nav li {
-    display: inline-block; /* Keep items inline */
+    display: inline-block;
+    /* Keep items inline */
 }
 
 .tab-nav a {
@@ -47,7 +52,8 @@ header h1 {
     text-decoration: none;
     color: #333;
     font-weight: bold;
-    border-radius: 5px 5px 0 0; /* Rounded top corners */
+    border-radius: 5px 5px 0 0;
+    /* Rounded top corners */
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -58,11 +64,15 @@ header h1 {
 
 /* Style for the active tab */
 .tab-nav a.active {
-    background-color: #ffffff; /* White background for active */
-    color: #508D4E; /* Greenish text */
-    border-bottom: 3px solid #ffffff; /* Makes it look connected to content */
+    background-color: #ffffff;
+    /* White background for active */
+    color: #508D4E;
+    /* Greenish text */
+    border-bottom: 3px solid #ffffff;
+    /* Makes it look connected to content */
     position: relative;
-    top: 3px; /* Align with the bottom border of the nav bar */
+    top: 3px;
+    /* Align with the bottom border of the nav bar */
 }
 
 
@@ -73,11 +83,13 @@ header h1 {
     margin: 2rem;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    min-height: 300px; /* Ensure some height */
+    min-height: 300px;
+    /* Ensure some height */
 }
 
 .content h2 {
-    color: #508D4E; /* Greenish */
+    color: #508D4E;
+    /* Greenish */
     border-bottom: 2px solid #eee;
     padding-bottom: 0.5rem;
     margin-top: 0;
@@ -95,7 +107,8 @@ header h1 {
 }
 
 .management-content button:hover {
-     background-color: #40753E; /* Darker green */
+    background-color: #40753E;
+    /* Darker green */
 }
 
 /* Footer Styling */
@@ -108,20 +121,25 @@ footer {
     font-size: 0.9em;
 }
 
-    /* --- Additions/Modifications to your existing CSS --- */
+/* --- Additions/Modifications to your existing CSS --- */
 
 /* Form Styling */
 .crop-form {
-    background-color: #ffffff; /* Match content background */
+    background-color: #ffffff;
+    /* Match content background */
     padding: 1.5rem;
     border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    margin-bottom: 2rem; /* Space below the form */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    /* Space below the form */
     /* Optional: Use Grid for better alignment */
     display: grid;
-    grid-template-columns: auto 1fr; /* Label | Input */
-    gap: 1rem; /* Space between rows and columns */
-    align-items: center; /* Vertically align label and input */
+    grid-template-columns: auto 1fr;
+    /* Label | Input */
+    gap: 1rem;
+    /* Space between rows and columns */
+    align-items: center;
+    /* Vertically align label and input */
 }
 
 .crop-form .form-group {
@@ -131,37 +149,206 @@ footer {
     /* flex-direction: column; */
 
     /* These styles apply when using grid on the parent */
-    display: contents; /* Allows grid layout to apply directly to label/input */
+    display: contents;
+    /* Allows grid layout to apply directly to label/input */
 }
 
 
 .crop-form label {
     font-weight: bold;
-    margin-bottom: 0; /* Remove bottom margin if using grid gap */
-    /* grid-column: 1 / 2; */ /* Explicitly place label in first column */
-     text-align: right; /* Align label text to the right */
-     padding-right: 10px;
+    margin-bottom: 0;
+    /* Remove bottom margin if using grid gap */
+    /* grid-column: 1 / 2; */
+    /* Explicitly place label in first column */
+    text-align: right;
+    /* Align label text to the right */
+    padding-right: 10px;
 }
 
 .crop-form input[type="text"],
 .crop-form input[type="number"],
 .crop-form input[type="date"] {
-    width: 100%; /* Make inputs fill their grid cell */
+    width: 100%;
+    /* Make inputs fill their grid cell */
     padding: 0.6rem 0.8rem;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
-    box-sizing: border-box; /* Include padding and border in width */
-     /* grid-column: 2 / 3; */ /* Explicitly place input in second column */
+    box-sizing: border-box;
+    /* Include padding and border in width */
+    /* grid-column: 2 / 3; */
+    /* Explicitly place input in second column */
 }
 
 /* Style the submit button specifically within this form if needed,
    or rely on the generic .management-content button style */
+/* --- New Additions for Modern UI & AI Features --- */
+
+/* AI Insight Card */
+.ai-insight-card {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-left: 5px solid #2196f3;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(33, 150, 243, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.ai-icon {
+    font-size: 2rem;
+    background: #fff;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ai-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1565c0;
+    font-size: 1.1rem;
+}
+
+.ai-content p {
+    margin: 0;
+    color: #0d47a1;
+    font-weight: 500;
+}
+
+/* Crop Details Grid Layout */
+.crop-details-grid {
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "stats stats"
+        "transactions timeline"
+        "actions actions";
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 900px) {
+    .crop-details-grid {
+        grid-template-areas:
+            "header"
+            "stats"
+            "transactions"
+            "timeline"
+            "actions";
+        grid-template-columns: 1fr;
+    }
+}
+
+.grid-header {
+    grid-area: header;
+}
+
+.grid-stats {
+    grid-area: stats;
+}
+
+.grid-transactions {
+    grid-area: transactions;
+}
+
+.grid-timeline {
+    grid-area: timeline;
+}
+
+.grid-actions {
+    grid-area: actions;
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+    border-left: 2px solid #e0e0e0;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -36px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    background: #508c40;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #508c40;
+}
+
+.timeline-content {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.timeline-date {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.timeline-title {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+/* Mini Form Panels */
+.action-card {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.action-card h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+/* Button for View Details */
+.btn-details {
+    display: inline-block;
+    background-color: #508c40;
+    color: white;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-details:hover {
+    background-color: #407533;
+}
+
 .crop-form button {
     /* Place button across both columns or adjust grid */
-    grid-column: 1 / -1; /* Span across all columns */
-    justify-self: start; /* Align button to the start of the grid area */
-    margin-top: 1rem; /* Add some space above the button */
+    grid-column: 1 / -1;
+    /* Span across all columns */
+    justify-self: start;
+    /* Align button to the start of the grid area */
+    margin-top: 1rem;
+    /* Add some space above the button */
     /* Inherits styles from .management-content button */
 }
 
@@ -170,65 +357,78 @@ footer {
     border: 0;
     height: 1px;
     background-color: #eee;
-    margin: 2.5rem 0; /* Add significant space around the divider */
+    margin: 2.5rem 0;
+    /* Add significant space around the divider */
 }
 
 
 /* Table Styling */
 .crop-table {
     width: 100%;
-    border-collapse: collapse; /* Merge cell borders */
-    margin-top: 1.5rem; /* Space above the table */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-collapse: collapse;
+    /* Merge cell borders */
+    margin-top: 1.5rem;
+    /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .crop-table th,
 .crop-table td {
     border: 1px solid #ddd;
-    padding: 0.8rem 1rem; /* More padding in cells */
+    padding: 0.8rem 1rem;
+    /* More padding in cells */
     text-align: left;
-    vertical-align: middle; /* Align text vertically */
+    vertical-align: middle;
+    /* Align text vertically */
 }
 
 .crop-table thead th {
-    background-color: #f2f2f2; /* Light grey header */
+    background-color: #f2f2f2;
+    /* Light grey header */
     font-weight: bold;
     color: #333;
 }
 
 .crop-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Zebra striping for readability */
+    background-color: #f9f9f9;
+    /* Zebra striping for readability */
 }
 
 .crop-table tbody tr:hover {
-    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+    background-color: #e8f5e9;
+    /* Highlight row on hover (light green) */
 }
 
 /* Ensure management-content class is applied if buttons are inside */
 .management-content h3 {
-     color: #444; /* Slightly darker heading for sections */
-     margin-top: 1.5rem;
-     margin-bottom: 1rem;
-     padding-bottom: 0.3rem;
-     border-bottom: 1px solid #eee;
+    color: #444;
+    /* Slightly darker heading for sections */
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #eee;
 }
 
 /* Adjust padding inside main content if needed */
 .content.management-content {
-    padding: 2rem 2.5rem; /* Slightly more horizontal padding */
+    padding: 2rem 2.5rem;
+    /* Slightly more horizontal padding */
 }
+
 /* --- Base Styles (Example - Add or Modify as needed) --- */
 body {
     font-family: sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Light background for the page */
+    background-color: #f4f4f4;
+    /* Light background for the page */
     color: #333;
 }
 
 header {
-    background-color: #508c40; /* Example green */
+    background-color: #508c40;
+    /* Example green */
     color: white;
     padding: 1rem 0;
     text-align: center;
@@ -240,7 +440,8 @@ nav.tab-nav ul {
     margin: 0;
     background-color: #e0e0e0;
     display: flex;
-    justify-content: center; /* Center tabs */
+    justify-content: center;
+    /* Center tabs */
     border-bottom: 2px solid #ccc;
 }
 
@@ -254,7 +455,8 @@ nav.tab-nav a {
     text-decoration: none;
     color: #333;
     font-weight: bold;
-    border-bottom: 3px solid transparent; /* For active state */
+    border-bottom: 3px solid transparent;
+    /* For active state */
 }
 
 nav.tab-nav a:hover {
@@ -262,16 +464,21 @@ nav.tab-nav a:hover {
 }
 
 nav.tab-nav a.active {
-    color: #508c40; /* Match header green */
-    border-bottom-color: #508c40; /* Active indicator */
+    color: #508c40;
+    /* Match header green */
+    border-bottom-color: #508c40;
+    /* Active indicator */
 }
 
 main.content {
-    max-width: 960px; /* Limit content width */
-    margin: 2rem auto; /* Center content with space */
+    max-width: 960px;
+    /* Limit content width */
+    margin: 2rem auto;
+    /* Center content with space */
     padding: 1.5rem;
-    background-color: #ffffff; /* White background for content area */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    /* White background for content area */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
 
@@ -287,44 +494,59 @@ footer {
 
 /* Form Styling */
 .crop-form {
-    background-color: #ffffff; /* Match content background */
+    background-color: #ffffff;
+    /* Match content background */
     padding: 1.5rem;
     border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    margin-bottom: 2rem; /* Space below the form */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    /* Space below the form */
     display: grid;
-    grid-template-columns: auto 1fr; /* Label | Input */
-    gap: 1rem; /* Space between rows and columns */
-    align-items: center; /* Vertically align label and input */
+    grid-template-columns: auto 1fr;
+    /* Label | Input */
+    gap: 1rem;
+    /* Space between rows and columns */
+    align-items: center;
+    /* Vertically align label and input */
 }
 
 .crop-form .form-group {
     /* These styles apply when using grid on the parent */
-    display: contents; /* Allows grid layout to apply directly to label/input */
+    display: contents;
+    /* Allows grid layout to apply directly to label/input */
 }
 
 .crop-form label {
     font-weight: bold;
-    text-align: right; /* Align label text to the right */
-    padding-right: 10px; /* Space between label and input */
-    /* grid-column: 1 / 2; */ /* Implicit placement */
+    text-align: right;
+    /* Align label text to the right */
+    padding-right: 10px;
+    /* Space between label and input */
+    /* grid-column: 1 / 2; */
+    /* Implicit placement */
 }
 
 .crop-form input[type="text"],
 .crop-form input[type="number"],
 .crop-form input[type="date"] {
-    width: 100%; /* Make inputs fill their grid cell */
+    width: 100%;
+    /* Make inputs fill their grid cell */
     padding: 0.6rem 0.8rem;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
-    box-sizing: border-box; /* Include padding and border in width */
-     /* grid-column: 2 / 3; */ /* Implicit placement */
+    box-sizing: border-box;
+    /* Include padding and border in width */
+    /* grid-column: 2 / 3; */
+    /* Implicit placement */
 }
 
 /* General Button Styling (applied via inheritance or specific class) */
-button, .button { /* Style <button> elements and elements with class="button" */
-    background-color: #508c40; /* Example Green */
+button,
+.button {
+    /* Style <button> elements and elements with class="button" */
+    background-color: #508c40;
+    /* Example Green */
     color: white;
     padding: 0.7rem 1.5rem;
     border: none;
@@ -335,15 +557,20 @@ button, .button { /* Style <button> elements and elements with class="button" */
     transition: background-color 0.2s ease;
 }
 
-button:hover, .button:hover {
-    background-color: #407533; /* Darker green on hover */
+button:hover,
+.button:hover {
+    background-color: #407533;
+    /* Darker green on hover */
 }
 
 /* Specific placement for the form's submit button */
 .crop-form button[type="submit"] {
-    grid-column: 1 / -1; /* Span across all columns */
-    justify-self: start; /* Align button to the start of the grid area */
-    margin-top: 1rem; /* Add some space above the button */
+    grid-column: 1 / -1;
+    /* Span across all columns */
+    justify-self: start;
+    /* Align button to the start of the grid area */
+    margin-top: 1rem;
+    /* Add some space above the button */
 }
 
 /* Divider Style */
@@ -351,7 +578,8 @@ button:hover, .button:hover {
     border: 0;
     height: 1px;
     background-color: #eee;
-    margin: 2.5rem 0; /* Add significant space around the divider */
+    margin: 2.5rem 0;
+    /* Add significant space around the divider */
 }
 
 /* General Heading Styles within management content */
@@ -359,57 +587,68 @@ button:hover, .button:hover {
     color: #333;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #508c40; /* Thicker border under main title */
+    border-bottom: 2px solid #508c40;
+    /* Thicker border under main title */
 }
 
 .management-content h3 {
-    color: #444; /* Slightly darker heading for sections */
+    color: #444;
+    /* Slightly darker heading for sections */
     margin-top: 1.5rem;
     margin-bottom: 1rem;
     padding-bottom: 0.3rem;
-    border-bottom: 1px solid #eee; /* Lighter border under section titles */
+    border-bottom: 1px solid #eee;
+    /* Lighter border under section titles */
 }
 
 /* Table Styling */
 .crop-table {
     width: 100%;
-    border-collapse: collapse; /* Merge cell borders */
-    margin-top: 1.5rem; /* Space above the table */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-collapse: collapse;
+    /* Merge cell borders */
+    margin-top: 1.5rem;
+    /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .crop-table th,
 .crop-table td {
     border: 1px solid #ddd;
-    padding: 0.8rem 1rem; /* More padding in cells */
+    padding: 0.8rem 1rem;
+    /* More padding in cells */
     text-align: left;
-    vertical-align: middle; /* Align text vertically */
+    vertical-align: middle;
+    /* Align text vertically */
 }
 
 .crop-table thead th {
-    background-color: #f2f2f2; /* Light grey header */
+    background-color: #f2f2f2;
+    /* Light grey header */
     font-weight: bold;
     color: #333;
 }
 
 .crop-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Zebra striping for readability */
+    background-color: #f9f9f9;
+    /* Zebra striping for readability */
 }
 
 .crop-table tbody tr:hover {
-    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+    background-color: #e8f5e9;
+    /* Highlight row on hover (light green) */
 }
 
 /* Adjust padding inside main content if needed */
 /* .content.management-content { */
-    /* Padding is already set in main.content rule */
+/* Padding is already set in main.content rule */
 /* } */
 
 /* Add other base styles for html, body, links, etc. if needed */
 /* --- Modern Dashboard Styles --- */
 
 .dashboard-container {
-    max-width: 1200px; /* Wider for dashboard */
+    max-width: 1200px;
+    /* Wider for dashboard */
 }
 
 .welcome-section {
@@ -435,14 +674,16 @@ button:hover, .button:hover {
     background: #ffffff;
     padding: 1.5rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Soft shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    /* Soft shadow */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-left: 5px solid #508c40; /* Accent color */
+    border-left: 5px solid #508c40;
+    /* Accent color */
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card h3 {
@@ -451,7 +692,8 @@ button:hover, .button:hover {
     text-transform: uppercase;
     color: #7f8c8d;
     letter-spacing: 0.5px;
-    border: none; /* Override default h3 border */
+    border: none;
+    /* Override default h3 border */
 }
 
 .stat-number {
@@ -486,13 +728,15 @@ button:hover, .button:hover {
 /* 2. Dashboard Main Layout */
 .dashboard-main {
     display: grid;
-    grid-template-columns: 2fr 1fr; /* Chart takes 2/3, Actions take 1/3 */
+    grid-template-columns: 2fr 1fr;
+    /* Chart takes 2/3, Actions take 1/3 */
     gap: 2rem;
 }
 
 @media (max-width: 768px) {
     .dashboard-main {
-        grid-template-columns: 1fr; /* Stack on mobile */
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
     }
 }
 
@@ -501,7 +745,7 @@ button:hover, .button:hover {
     background: #fff;
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     min-height: 400px;
 }
 
@@ -538,7 +782,7 @@ button:hover, .button:hover {
     background: #fff;
     padding: 1.5rem;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     text-align: center;
 }
 
@@ -562,12 +806,14 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Light background for the page */
+    background-color: #f4f4f4;
+    /* Light background for the page */
     color: #333;
 }
 
 header {
-    background-color: #508c40; /* Example green */
+    background-color: #508c40;
+    /* Example green */
     color: white;
     padding: 1rem 0;
     text-align: center;
@@ -579,7 +825,8 @@ nav.tab-nav ul {
     margin: 0;
     background-color: #e0e0e0;
     display: flex;
-    justify-content: center; /* Center tabs */
+    justify-content: center;
+    /* Center tabs */
     border-bottom: 2px solid #ccc;
 }
 
@@ -593,7 +840,8 @@ nav.tab-nav a {
     text-decoration: none;
     color: #333;
     font-weight: bold;
-    border-bottom: 3px solid transparent; /* For active state */
+    border-bottom: 3px solid transparent;
+    /* For active state */
 }
 
 nav.tab-nav a:hover {
@@ -601,16 +849,21 @@ nav.tab-nav a:hover {
 }
 
 nav.tab-nav a.active {
-    color: #508c40; /* Match header green */
-    border-bottom-color: #508c40; /* Active indicator */
+    color: #508c40;
+    /* Match header green */
+    border-bottom-color: #508c40;
+    /* Active indicator */
 }
 
 main.content {
-    max-width: 960px; /* Limit content width */
-    margin: 2rem auto; /* Center content with space */
+    max-width: 960px;
+    /* Limit content width */
+    margin: 2rem auto;
+    /* Center content with space */
     padding: 1.5rem;
-    background-color: #ffffff; /* White background for content area */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    /* White background for content area */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
 
@@ -626,44 +879,59 @@ footer {
 
 /* Form Styling */
 .crop-form {
-    background-color: #ffffff; /* Match content background */
+    background-color: #ffffff;
+    /* Match content background */
     padding: 1.5rem;
     border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    margin-bottom: 2rem; /* Space below the form */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    /* Space below the form */
     display: grid;
-    grid-template-columns: auto 1fr; /* Label | Input */
-    gap: 1rem; /* Space between rows and columns */
-    align-items: center; /* Vertically align label and input */
+    grid-template-columns: auto 1fr;
+    /* Label | Input */
+    gap: 1rem;
+    /* Space between rows and columns */
+    align-items: center;
+    /* Vertically align label and input */
 }
 
 .crop-form .form-group {
     /* These styles apply when using grid on the parent */
-    display: contents; /* Allows grid layout to apply directly to label/input */
+    display: contents;
+    /* Allows grid layout to apply directly to label/input */
 }
 
 .crop-form label {
     font-weight: bold;
-    text-align: right; /* Align label text to the right */
-    padding-right: 10px; /* Space between label and input */
-    /* grid-column: 1 / 2; */ /* Implicit placement */
+    text-align: right;
+    /* Align label text to the right */
+    padding-right: 10px;
+    /* Space between label and input */
+    /* grid-column: 1 / 2; */
+    /* Implicit placement */
 }
 
 .crop-form input[type="text"],
 .crop-form input[type="number"],
 .crop-form input[type="date"] {
-    width: 100%; /* Make inputs fill their grid cell */
+    width: 100%;
+    /* Make inputs fill their grid cell */
     padding: 0.6rem 0.8rem;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
-    box-sizing: border-box; /* Include padding and border in width */
-     /* grid-column: 2 / 3; */ /* Implicit placement */
+    box-sizing: border-box;
+    /* Include padding and border in width */
+    /* grid-column: 2 / 3; */
+    /* Implicit placement */
 }
 
 /* General Button Styling (applied via inheritance or specific class) */
-button, .button { /* Style <button> elements and elements with class="button" */
-    background-color: #508c40; /* Example Green */
+button,
+.button {
+    /* Style <button> elements and elements with class="button" */
+    background-color: #508c40;
+    /* Example Green */
     color: white;
     padding: 0.7rem 1.5rem;
     border: none;
@@ -674,15 +942,20 @@ button, .button { /* Style <button> elements and elements with class="button" */
     transition: background-color 0.2s ease;
 }
 
-button:hover, .button:hover {
-    background-color: #407533; /* Darker green on hover */
+button:hover,
+.button:hover {
+    background-color: #407533;
+    /* Darker green on hover */
 }
 
 /* Specific placement for the form's submit button */
 .crop-form button[type="submit"] {
-    grid-column: 1 / -1; /* Span across all columns */
-    justify-self: start; /* Align button to the start of the grid area */
-    margin-top: 1rem; /* Add some space above the button */
+    grid-column: 1 / -1;
+    /* Span across all columns */
+    justify-self: start;
+    /* Align button to the start of the grid area */
+    margin-top: 1rem;
+    /* Add some space above the button */
 }
 
 /* Divider Style */
@@ -690,7 +963,8 @@ button:hover, .button:hover {
     border: 0;
     height: 1px;
     background-color: #eee;
-    margin: 2.5rem 0; /* Add significant space around the divider */
+    margin: 2.5rem 0;
+    /* Add significant space around the divider */
 }
 
 /* General Heading Styles within management content */
@@ -698,50 +972,60 @@ button:hover, .button:hover {
     color: #333;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #508c40; /* Thicker border under main title */
+    border-bottom: 2px solid #508c40;
+    /* Thicker border under main title */
 }
 
 .management-content h3 {
-    color: #444; /* Slightly darker heading for sections */
+    color: #444;
+    /* Slightly darker heading for sections */
     margin-top: 1.5rem;
     margin-bottom: 1rem;
     padding-bottom: 0.3rem;
-    border-bottom: 1px solid #eee; /* Lighter border under section titles */
+    border-bottom: 1px solid #eee;
+    /* Lighter border under section titles */
 }
 
 /* Table Styling */
 .crop-table {
     width: 100%;
-    border-collapse: collapse; /* Merge cell borders */
-    margin-top: 1.5rem; /* Space above the table */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-collapse: collapse;
+    /* Merge cell borders */
+    margin-top: 1.5rem;
+    /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .crop-table th,
 .crop-table td {
     border: 1px solid #ddd;
-    padding: 0.8rem 1rem; /* More padding in cells */
+    padding: 0.8rem 1rem;
+    /* More padding in cells */
     text-align: left;
-    vertical-align: middle; /* Align text vertically */
+    vertical-align: middle;
+    /* Align text vertically */
 }
 
 .crop-table thead th {
-    background-color: #f2f2f2; /* Light grey header */
+    background-color: #f2f2f2;
+    /* Light grey header */
     font-weight: bold;
     color: #333;
 }
 
 .crop-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Zebra striping for readability */
+    background-color: #f9f9f9;
+    /* Zebra striping for readability */
 }
 
 .crop-table tbody tr:hover {
-    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+    background-color: #e8f5e9;
+    /* Highlight row on hover (light green) */
 }
 
 /* Adjust padding inside main content if needed */
 /* .content.management-content { */
-    /* Padding is already set in main.content rule */
+/* Padding is already set in main.content rule */
 /* } */
 
 /* Add other base styles for html, body, links, etc. if needed */
