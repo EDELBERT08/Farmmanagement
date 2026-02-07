@@ -4,12 +4,13 @@ import com.example.farmmanagement.model.Crop;
 import com.example.farmmanagement.service.AiService;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 @Service
 public class AiServiceImpl implements AiService {
 
-    private final Random random = new Random();
+    private final Random random = new SecureRandom();
 
     @Override
     public String getFarmSummary() {
