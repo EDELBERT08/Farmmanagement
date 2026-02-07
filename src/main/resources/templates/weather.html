@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Weather Forecast</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="p-8">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Weather Forecast</h1>
+                    <p class="text-gray-500 mt-1">Real-time weather updates and forecast for your farm</p>
+                </div>
+                <div
+                    class="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm font-medium text-gray-600">
+                    <i class="fa-solid fa-location-dot text-green-600"></i>
+                    <span id="locationName">Detecting Location...</span>
+                </div>
+            </div>
+
+            <!-- Greeting Banner -->
+            <div class="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-3xl p-6 mb-8 shadow-lg">
+                <div class="flex items-center justify-between text-white">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-1" id="weatherGreetingText">Good day</h2>
+                        <p class="text-blue-100" id="weatherGreetingSubtext">Check today's weather conditions</p>
+                    </div>
+                    <div class="text-6xl opacity-50">
+                        <i id="weatherGreetingIcon" class="fa-solid fa-sun"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- Main Current Weather Card (Left Column) -->
+                <div
+                    class="bg-gradient-to-br from-green-500 to-emerald-700 rounded-[2rem] p-8 text-white shadow-xl lg:col-span-1 relative overflow-hidden min-h-[400px] flex flex-col justify-between">
+                    <!-- Decorative Circles -->
+                    <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white opacity-10"></div>
+                    <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-white opacity-10">
+                    </div>
+
+                    <div class="flex justify-between items-start z-10">
+                        <div
+                            class="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-location-arrow text-xs"></i> <span id="currentLocation">Unknown</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm">C</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center z-10 py-8">
+                        <img id="weatherIcon" src="https://openweathermap.org/img/wn/02d@4x.png"
+                            class="w-32 h-32 mx-auto drop-shadow-lg" alt="Weather Icon">
+                        <div class="mt-4">
+                            <h2 class="text-7xl font-bold" id="currentTemp">--°</h2>
+                            <p class="text-xl font-medium opacity-90 mt-2" id="weatherDesc">Loading...</p>
+                        </div>
+                        <p class="text-sm opacity-75 mt-4">Feels like <span id="feelsLike">--</span>°</p>
+                    </div>
+
+                    <div class="z-10 bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+                        <div class="flex justify-between items-center text-sm">
+                            <span id="currentDate">Mon, 12th Aug</span>
+                            <span id="currentTime">10:00 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (Highlights & Forecast) -->
+                <div class="lg:col-span-2 space-y-8">
+
+                    <!-- Today's Highlights -->
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Today's Highlight</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+
+                            <!-- Wind -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-green-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">Wind Status</span>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-3xl font-bold text-gray-800"><span id="windSpeed">--</span> <span
+                                            class="text-base font-normal text-gray-500">km/h</span></span>
+                                    <i
+                                        class="fa-solid fa-wind text-2xl text-gray-300 group-hover:text-green-500 transition-colors"></i>
+                                </div>
+                            </div>
+
+                            <!-- Humidity -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-blue-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">Humidity</span>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-3xl font-bold text-gray-800"><span id="humidity">--</span> <span
+                                            class="text-base font-normal text-gray-500">%</span></span>
+                                    <i
+                                        class="fa-solid fa-droplet text-2xl text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+                                </div>
+                                <p class="text-xs text-green-600 mt-2 font-medium" id="humidityStatus">Normal</p>
+                            </div>
+
+                            <!-- UV Index -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-orange-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">UV Index</span>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-3xl font-bold text-gray-800"><span id="uvIndex">--</span> <span
+                                            class="text-base font-normal text-gray-500">UV</span></span>
+                                    <i
+                                        class="fa-solid fa-sun text-2xl text-gray-300 group-hover:text-orange-500 transition-colors"></i>
+                                </div>
+                                <p class="text-xs text-orange-600 mt-2 font-medium" id="uvStatus">Moderate</p>
+                            </div>
+
+                            <!-- Sunrise / Sunset -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-yellow-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">Sun & Moon</span>
+                                <div class="flex items-center justify-between mt-2">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                            <i class="fa-regular fa-sun"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-400">Sunrise</p>
+                                            <p class="font-bold text-gray-800" id="sunrise">--:--</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                            <i class="fa-regular fa-moon"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-400">Sunset</p>
+                                            <p class="font-bold text-gray-800" id="sunset">--:--</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 10 Day Forecast -->
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">7 Day Forecast</h3>
+                        <div class="overflow-x-auto pb-4">
+                            <div class="flex gap-4 min-w-max" id="forecastContainer">
+                                <!-- Forecast Item (Template) -->
+                                <div
+                                    class="w-24 flex-shrink-0 bg-white border border-gray-100 rounded-2xl p-4 text-center hover:shadow-md transition-shadow cursor-default">
+                                    <p class="text-sm font-bold text-gray-700 mb-2">Mon</p>
+                                    <img src="https://openweathermap.org/img/wn/10d.png" class="w-10 h-10 mx-auto mb-2"
+                                        alt="icon">
+                                    <p class="font-bold text-gray-800">24°</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Script for Weather Logic -->
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', () => {
+                // Time-based greeting
+                const now = new Date();
+                const hour = now.getHours();
+                let greeting = "Good day";
+                let icon = "fa-sun";
+
+                if (hour >= 5 && hour < 12) {
+                    greeting = "Good morning";
+                    icon = "fa-cloud-sun";
+                } else if (hour >= 12 && hour < 17) {
+                    greeting = "Good afternoon";
+                    icon = "fa-sun";
+                } else if (hour >= 17 && hour < 21) {
+                    greeting = "Good evening";
+                    icon = "fa-moon";
+                } else {
+                    greeting = "Good night";
+                    icon = "fa-moon";
+                }
+
+                document.getElementById('weatherGreetingText').textContent = greeting;
+                document.getElementById('weatherGreetingIcon').className = `fa-solid ${icon}`;
+
+                // Update date and time
+                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+                const userLocation = /*[[${userLocation}]]*/ null;
+
+                if (userLocation) {
+                    const userLat = /*[[${userLocation?.latitude}]]*/ 0;
+                    const userLon = /*[[${userLocation?.longitude}]]*/ 0;
+                    const userCity = /*[[${userLocation?.city}]]*/ "My Farm";
+
+                    console.log('✅ Using saved location:', userCity, `(${userLat}, ${userLon})`);
+                    document.getElementById('locationName').textContent = userCity;
+                    document.getElementById('currentLocation').textContent = userCity;
+                    loadWeather(userLat, userLon);
+                }
+                else if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(success, error);
+                } else {
+                    console.warn("Geolocation not supported.");
+                    fallback();
+                }
+
+                function success(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    console.log('📍 Using browser geolocation:', `(${lat.toFixed(2)}, ${lon.toFixed(2)})`);
+                    document.getElementById('locationName').textContent = lat.toFixed(2) + ", " + lon.toFixed(2);
+                    loadWeather(lat, lon);
+                }
+
+                function error() {
+                    console.warn("Unable to retrieve location.");
+                    fallback();
+                }
+
+                function fallback() {
+                    const fallbackCity = "Nairobi (Default)";
+                    console.log('🔄 Using default location: Nairobi');
+                    document.getElementById('locationName').textContent = fallbackCity;
+                    document.getElementById('currentLocation').textContent = "Nairobi";
+                    loadWeather(-1.2921, 36.8219);
+                }
+
+                function loadWeather(lat, lon) {
+                    fetch(`/api/weather?lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => updateUI(data))
+                        .catch(err => console.error('Error fetching weather:', err));
+                }
+
+                function updateUI(data) {
+                    // Update Current
+                    document.getElementById('currentTemp').textContent = Math.round(data.temp) + '°';
+                    document.getElementById('windSpeed').textContent = data.windSpeed;
+                    document.getElementById('humidity').textContent = data.humidity;
+                    document.getElementById('uvIndex').textContent = data.uvIndex;
+                    document.getElementById('sunrise').textContent = data.sunrise;
+                    document.getElementById('sunset').textContent = data.sunset;
+                    document.getElementById('feelsLike').textContent = Math.round(data.temp + 2); // Mock feels like
+
+                    // WMO Weather interpretation codes (Open-Meteo standard)
+                    const code = data.weatherCode;
+                    console.log('🌤️ Weather code:', code);
+                    let desc = "Clear Sky";
+                    let icon = "fa-sun";
+
+                    if (code === 0) {
+                        desc = "Clear Sky";
+                        icon = "fa-sun";
+                    }
+                    else if (code >= 1 && code <= 3) {
+                        desc = code === 1 ? "Mainly Clear" : (code === 2 ? "Partly Cloudy" : "Overcast");
+                        icon = "fa-cloud-sun";
+                    }
+                    else if (code >= 45 && code <= 48) {
+                        desc = "Foggy";
+                        icon = "fa-smog";
+                    }
+                    else if (code >= 51 && code <= 55) {
+                        desc = "Drizzle";
+                        icon = "fa-cloud-rain";
+                    }
+                    else if (code >= 56 && code <= 57) {
+                        desc = "Freezing Drizzle";
+                        icon = "fa-snowflake";
+                    }
+                    else if (code >= 61 && code <= 65) {
+                        desc = code === 61 ? "Light Rain" : (code === 63 ? "Moderate Rain" : "Heavy Rain");
+                        icon = "fa-cloud-rain";
+                    }
+                    else if (code >= 66 && code <= 67) {
+                        desc = "Freezing Rain";
+                        icon = "fa-snowflake";
+                    }
+                    else if (code >= 71 && code <= 75) {
+                        desc = "Snow";
+                        icon = "fa-snowflake";
+                    }
+                    else if (code === 77) {
+                        desc = "Snow Grains";
+                        icon = "fa-snowflake";
+                    }
+                    else if (code >= 80 && code <= 82) {
+                        desc = "Rain Showers";
+                        icon = "fa-cloud-showers-heavy";
+                    }
+                    else if (code >= 85 && code <= 86) {
+                        desc = "Snow Showers";
+                        icon = "fa-snowflake";
+                    }
+                    else if (code >= 95 && code <= 99) {
+                        desc = "Thunderstorm";
+                        icon = "fa-cloud-bolt";
+                    }
+
+                    document.getElementById('weatherDesc').textContent = desc;
+
+                    // Update Forecast
+                    const forecastContainer = document.getElementById('forecastContainer');
+                    forecastContainer.innerHTML = '';
+
+                    const daily = data.forecast;
+                    if (daily && daily.time) {
+                        daily.time.forEach((dateStr, index) => {
+                            const date = new Date(dateStr);
+                            const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                            const maxTemp = Math.round(daily.temperature_2m_max[index]);
+                            const wmCode = daily.weather_code[index];
+
+                            // Determine Icon URL based on WMO code (using OpenWeatherMap icons as placeholder proxies or FA icons)
+                            // For simplicity, using a generic cloud icon here
+
+                            const div = document.createElement('div');
+                            div.className = 'w-24 flex-shrink-0 bg-white border border-gray-100 rounded-2xl p-4 text-center hover:shadow-md transition-shadow cursor-default';
+                            div.innerHTML = `
+                                <p class="text-sm font-bold text-gray-700 mb-2">${dayName}</p>
+                                <div class="text-2xl text-blue-400 mb-2"><i class="fa-solid fa-cloud-sun"></i></div>
+                                <p class="font-bold text-gray-800">${maxTemp}°</p>
+                            `;
+                            forecastContainer.appendChild(div);
+                        });
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

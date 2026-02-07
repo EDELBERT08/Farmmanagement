@@ -3,116 +3,85 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login - Farm Management</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FarmVista</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4CAF50',
+                        'primary-dark': '#388E3C',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
         }
-
-        .login-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-card h2 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #dfe6e9;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
-        }
-
-        .form-control:focus {
-            border-color: #508c40;
-            outline: none;
-        }
-
-        .btn-login {
-            background-color: #508c40;
-            color: white;
-            width: 100%;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 1rem;
-        }
-
-        .btn-login:hover {
-            background-color: #3e6e32;
-        }
-
-        .error-message {
-            color: #e74c3c;
-            background-color: #fdeaea;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-    </style>
+    </script>
 </head>
 
-<body>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
 
-    <div class="login-card">
-        <h2>Welcome Back</h2>
-
-        <div th:if="${param.error}" class="error-message">
-            Invalid username or password.
-        </div>
-        <div th:if="${param.logout}" class="error-message" style="color: #27ae60; background-color: #e8f5e9;">
-            You have been logged out.
-        </div>
-
-        <form th:action="@{/login}" method="post">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" required autofocus>
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md transform transition-all hover:scale-[1.01]">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-primary mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <!-- Alternatively use FontAwesome if preferred/loaded -->
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+            <h2 class="text-2xl font-bold text-gray-800">Welcome Back</h2>
+            <p class="text-gray-500 text-sm mt-2">Sign in to manage your farm</p>
+        </div>
+
+        <div th:if="${param.error}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r"
+            role="alert">
+            <p class="font-bold">Error</p>
+            <p>Invalid username or password.</p>
+        </div>
+        <div th:if="${param.logout}" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r"
+            role="alert">
+            <p>You have been logged out.</p>
+        </div>
+
+        <form th:action="@{/login}" method="post" class="space-y-6">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" id="username" name="username" required autofocus
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-green-200 outline-none transition-colors"
+                    placeholder="Enter your username">
             </div>
-            <button type="submit" class="btn-login">Login</button>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" name="password" required
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-green-200 outline-none transition-colors"
+                    placeholder="Enter your password">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
+                Sign In
+            </button>
         </form>
 
-        <p style="margin-top: 1.5rem; font-size: 0.85rem; color: #95a5a6;">
-            <a th:href="@{/}" style="color: #508c40; text-decoration: none;">&larr; Back to Home</a>
-        </p>
+        <div class="mt-8 text-center">
+            <a th:href="@{/}"
+                class="text-sm text-primary hover:text-primary-dark font-medium hover:underline flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Home
+            </a>
+        </div>
     </div>
 
 </body>

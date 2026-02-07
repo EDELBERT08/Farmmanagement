@@ -5,11 +5,15 @@ import com.example.farmmanagement.model.Crop;
 import com.example.farmmanagement.model.CropActivity;
 import com.example.farmmanagement.model.CropTransaction;
 import com.example.farmmanagement.model.Field;
+import com.example.farmmanagement.model.SoilRecord;
+import com.example.farmmanagement.model.WaterRecord;
+import com.example.farmmanagement.model.SoilInput;
 import com.example.farmmanagement.service.AnimalService;
 import com.example.farmmanagement.service.CropActivityService;
 import com.example.farmmanagement.service.CropService;
 import com.example.farmmanagement.service.CropTransactionService;
 import com.example.farmmanagement.service.FieldService;
+import com.example.farmmanagement.service.SoilWaterService;
 import com.example.farmmanagement.service.AiService;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -27,23 +31,37 @@ public class DashboardController {
     private final FieldService fieldService;
     private final CropTransactionService transactionService;
     private final CropActivityService activityService;
+    private final SoilWaterService soilWaterService;
     private final AiService aiService;
+    private final com.example.farmmanagement.repository.UserRepository userRepository;
 
     public DashboardController(CropService cropService, AnimalService animalService, FieldService fieldService,
-            CropTransactionService transactionService, CropActivityService activityService, AiService aiService) {
+            CropTransactionService transactionService, CropActivityService activityService,
+            SoilWaterService soilWaterService, AiService aiService,
+            com.example.farmmanagement.repository.UserRepository userRepository) {
         this.cropService = cropService;
         this.animalService = animalService;
         this.fieldService = fieldService;
         this.transactionService = transactionService;
         this.activityService = activityService;
+        this.soilWaterService = soilWaterService;
         this.aiService = aiService;
+        this.userRepository = userRepository;
     }
 
     // Handles requests to "/home"
     @GetMapping("/home")
-    public String showHomePage(Model model) {
+    public String showHomePage(Model model, org.springframework.security.core.Authentication authentication) {
         model.addAttribute("pageTitle", "Home Dashboard");
         model.addAttribute("activePage", "home");
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            com.example.farmmanagement.model.User user = userRepository.findByUsername(username).orElse(null);
+            if (user != null && user.getLatitude() != null && user.getLongitude() != null) {
+                model.addAttribute("userLocation", user);
+            }
+        }
 
         // Global Analytics
         long totalCrops = cropService.countCrops();
@@ -51,29 +69,40 @@ public class DashboardController {
         Double globalExpense = transactionService.calculateGlobalTotalExpenses();
         Double globalIncome = transactionService.calculateGlobalTotalIncome();
         Double globalProfit = globalIncome - globalExpense;
+        Double totalLandArea = fieldService.calculateTotalLandArea(); // New
 
         model.addAttribute("totalCrops", totalCrops);
         model.addAttribute("totalAnimals", totalAnimals);
         model.addAttribute("globalExpense", globalExpense);
         model.addAttribute("globalIncome", globalIncome);
         model.addAttribute("globalProfit", globalProfit);
+        model.addAttribute("totalLandArea", totalLandArea);
 
         // Chart Data
         model.addAttribute("cropDistribution", cropService.getCropTypeDistribution());
+
+        // Lists for Dashboard
+        model.addAttribute("upcomingHarvests", cropService.getUpcomingHarvests()); // New
+        model.addAttribute("upcomingTasks", activityService.getUpcomingTasks()); // New
 
         // AI Insights
         model.addAttribute("farmInsights", aiService.getFarmSummary());
 
         // Mock Data for UI (To be replaced with real services later)
-        model.addAttribute("weatherLocation", "Chicago, IL");
-        model.addAttribute("weatherTemp", "24");
-        model.addAttribute("weatherCondition", "Sunny");
+        // Weather data now fetched via API in index.html
+
+        // New Mock Data for Dashboard Capabilities
+        model.addAttribute("equipmentStatus", "Operational");
+        model.addAttribute("laborAllocation", "85%");
+        model.addAttribute("fieldHealth", "Good");
+        model.addAttribute("harvestInventory", "1,200 kg");
 
         return "index";
     }
 
     // --- CROP MANAGEMENT ---
 
+    // GET Request: Show the form and the list of existing crops
     // GET Request: Show the form and the list of existing crops
     @GetMapping("/crop")
     public String showCropManagementPage(Model model) {
@@ -82,6 +111,20 @@ public class DashboardController {
         model.addAttribute("crops", cropService.getAllCrops()); // Fetch from DB
         model.addAttribute("fields", fieldService.getAllFields()); // Fetch fields for selection
         model.addAttribute("newCrop", new Crop()); // Provide an empty Crop object
+
+        // Add Dashboard Metrics
+        model.addAttribute("totalCropsCount", cropService.countCrops()); // Distinct types count logic can be added
+                                                                         // later
+        model.addAttribute("totalYield", cropService.calculateTotalYield());
+        model.addAttribute("growthStatus", cropService.getGrowthStatus());
+        model.addAttribute("harvestStats", cropService.getHarvestStatistics());
+        model.addAttribute("growthData", cropService.getCropGrowthData());
+        model.addAttribute("fieldMetrics", fieldService.getFieldMetrics());
+
+        // Reuse upcoming tasks and harvests
+        model.addAttribute("upcomingHarvests", cropService.getUpcomingHarvests());
+        model.addAttribute("upcomingTasks", activityService.getUpcomingTasks());
+
         return "crop-management";
     }
 
@@ -164,21 +207,93 @@ public class DashboardController {
         return "management-page";
     }
 
-    // --- FIELD MANAGEMENT ---
+    // --- SOIL & WATER MANAGEMENT (FIELD-BASED) ---
     @GetMapping("/field")
-    public String showFieldManagementPage(Model model) {
-        model.addAttribute("pageTitle", "Field Management");
+    public String showFieldManagement(Model model) {
+        model.addAttribute("pageTitle", "Soil & Water Management");
         model.addAttribute("activePage", "field");
-        model.addAttribute("fields", fieldService.getAllFields());
+
+        // Show only master farms on main page
+        java.util.List<Field> masterFarms = fieldService.getMasterFarms();
+        model.addAttribute("fields", masterFarms);
         model.addAttribute("newField", new Field());
+
+        // Calculate summary metrics
+        long totalFields = fieldService.getAllFields().size();
+        Double avgSoilPH = soilWaterService.calculateAverageSoilPH();
+
+        model.addAttribute("totalFields", totalFields);
+        model.addAttribute("avgSoilPH", avgSoilPH != null ? String.format("%.1f", avgSoilPH) : "N/A");
+
         return "field-management";
     }
 
     @PostMapping("/field/add")
-    public String addField(@ModelAttribute("newField") Field field, Model model) {
+    public String addField(@ModelAttribute("newField") Field field) {
         if (field != null && field.getName() != null && !field.getName().trim().isEmpty()) {
+            // Set as master farm if not specified
+            if (field.getIsMasterFarm() == null) {
+                field.setIsMasterFarm(true);
+            }
             fieldService.saveField(field);
         }
         return "redirect:/field";
+    }
+
+    // View detailed field information with soil/water records
+    @GetMapping("/field/{id}")
+    public String viewFieldDetails(@PathVariable Long id, Model model) {
+        Field field = fieldService.getFieldById(id).orElse(null);
+        if (field == null) {
+            return "redirect:/field";
+        }
+
+        model.addAttribute("field", field);
+        model.addAttribute("soilRecords", soilWaterService.getSoilRecordsByField(id));
+        model.addAttribute("waterRecords", soilWaterService.getWaterRecordsByField(id));
+        model.addAttribute("soilInputs", soilWaterService.getSoilInputsByField(id));
+        model.addAttribute("summary", soilWaterService.getFieldSoilWaterSummary(id));
+        model.addAttribute("soilPHTrend", soilWaterService.getSoilPHTrendData(id));
+        model.addAttribute("nutrientLevels", soilWaterService.getLatestNutrientLevels(id));
+
+        // Empty objects for forms
+        model.addAttribute("newSoilRecord", new SoilRecord());
+        model.addAttribute("newWaterRecord", new WaterRecord());
+        model.addAttribute("newSoilInput", new SoilInput());
+
+        model.addAttribute("pageTitle", "Field Details: " + field.getName());
+        model.addAttribute("activePage", "field");
+
+        return "field-details";
+    }
+
+    @PostMapping("/field/{id}/soil-record/add")
+    public String addSoilRecord(@PathVariable Long id, @ModelAttribute("newSoilRecord") SoilRecord soilRecord) {
+        Field field = fieldService.getFieldById(id).orElse(null);
+        if (field != null && soilRecord != null) {
+            soilRecord.setField(field);
+            soilWaterService.saveSoilRecord(soilRecord);
+        }
+        return "redirect:/field/" + id;
+    }
+
+    @PostMapping("/field/{id}/water-record/add")
+    public String addWaterRecord(@PathVariable Long id, @ModelAttribute("newWaterRecord") WaterRecord waterRecord) {
+        Field field = fieldService.getFieldById(id).orElse(null);
+        if (field != null && waterRecord != null) {
+            waterRecord.setField(field);
+            soilWaterService.saveWaterRecord(waterRecord);
+        }
+        return "redirect:/field/" + id;
+    }
+
+    @PostMapping("/field/{id}/soil-input/add")
+    public String addSoilInput(@PathVariable Long id, @ModelAttribute("newSoilInput") SoilInput soilInput) {
+        Field field = fieldService.getFieldById(id).orElse(null);
+        if (field != null && soilInput != null) {
+            soilInput.setField(field);
+            soilWaterService.saveSoilInput(soilInput);
+        }
+        return "redirect:/field/" + id;
     }
 }

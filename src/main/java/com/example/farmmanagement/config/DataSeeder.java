@@ -23,6 +23,10 @@ public class DataSeeder {
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setRole(Role.ADMIN);
+            // Default Location: Nairobi, Kenya
+            admin.setCity("Nairobi");
+            admin.setLatitude(-1.2921);
+            admin.setLongitude(36.8219);
             userRepository.save(admin);
             System.out.println("ADMIN user updated/created: username=admin");
         };

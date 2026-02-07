@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - FarmVista</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4CAF50',
+                        'primary-dark': '#388E3C',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
+        <div class="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h1>
+        <p class="text-gray-500 mb-6">
+            <span th:text="${status} ?: 'Error'">Error</span> -
+            <span th:text="${error} ?: 'Unexpected Error'">Unexpected Error</span>
+        </p>
+
+        <div th:if="${status == 403}"
+            class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg mb-6 text-sm">
+            <p class="font-bold mb-1">Session Expired?</p>
+            <p>Your session may have timed out or you are using an old form. Please try logging in again.</p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <a th:href="@{/login}"
+                class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-colors">
+                Return to Login
+            </a>
+            <a th:href="@{/home}" class="text-gray-500 hover:text-gray-700 font-medium">
+                Go to Dashboard
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

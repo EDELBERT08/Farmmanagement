@@ -43,5 +43,35 @@ public class CropService {
                 .collect(java.util.stream.Collectors.groupingBy(Crop::getType, java.util.stream.Collectors.counting()));
     }
 
+    public List<Crop> getUpcomingHarvests() {
+        // Return crops with harvest date in the future, sorted by date
+        return cropRepository.findAll().stream()
+                .filter(c -> c.getHarvestDate() != null && c.getHarvestDate().isAfter(java.time.LocalDate.now()))
+                .sorted(java.util.Comparator.comparing(Crop::getHarvestDate))
+                .limit(5)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    // Mock Data Methods for Dashboard
+    public String calculateTotalYield() {
+        return "450 tons"; // Mock
+    }
+
+    public String getGrowthStatus() {
+        return "85%"; // Mock
+    }
+
+    public java.util.Map<String, Integer> getHarvestStatistics() {
+        java.util.Map<String, Integer> stats = new java.util.HashMap<>();
+        stats.put("Wasted", 30);
+        stats.put("Planted", 200);
+        stats.put("Collected", 170);
+        return stats;
+    }
+
+    public java.util.List<Integer> getCropGrowthData() {
+        return java.util.Arrays.asList(1, 2, 3, 3, 4, 4, 5); // Mock growth per day
+    }
+
     // Add other business logic methods here
 }

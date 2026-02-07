@@ -7,133 +7,340 @@
 </head>
 
 <body>
-
     <div layout:fragment="content">
-        <!-- Re-initialize header for this specific page context if needed, or rely on layout's header -->
-        <!-- Since layout header uses th:fragment="header(title, subtitle)", we can explicitly replace it if we want custom title params
-             OR we can just let the layout handle generic ones. The layout currently assumes we pass title/subtitle. 
-             Wait, the layout html defined header fragment but didn't actually USE it in the layout body, it just defined it. 
-             We need to actually include the header in the layout.html body OR include it here. 
-             
-             Correction: I should have put `th:replace` inside the layout body or made the layout body encompass the header.
-             Let's check layout.html again. It has <header ... th:fragment="header...">.
-             If I use layout:decorate, the content inside this <div> will be injected into layout's `content` fragment.
-             I need to make sure the layout *calls* the header fragment.
-             
-             Actually, standard Thymeleaf Layout dialect usage:
-             Layout has:
-             <body>
-               <div th:replace="~{fragments/layout :: sidebar}"></div>
-               <div class="main-content">
-                  <header th:replace="~{fragments/layout :: header(...)}"></header>
-                  <div layout:fragment="content"></div>
-               </div>
-             </body>
-             
-             My previous layout.html definition was just defining fragments, not a full decorative layout.
-             Let me FIX layout.html first to be a proper Decorator.
-        -->
-
-        <div class="page-container">
-            <!-- Add New Crop Card -->
-            <div class="card-panel">
-                <h3 class="card-title">Add New Crop</h3>
-                <form class="modern-form" th:action="@{/crop/add}" th:object="${newCrop}" method="post">
-                    <div class="form-group">
-                        <label for="type">Type of Crop</label>
-                        <input type="text" class="form-control" id="type" th:field="*{type}" required
-                            placeholder="e.g., Maize, Beans">
+        <div class="p-8">
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Good Morning, Farm Manager!</h1>
+                    <p class="text-gray-500 mt-1">Optimize Your Farm Operations with Real-Time Insights</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div
+                        class="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm font-medium text-gray-600">
+                        <i class="fa-solid fa-cloud-sun text-yellow-400"></i>
+                        <span th:text="${weatherTemp != null ? weatherTemp + '°' : '24°'}">24°</span>
+                        <span>Today is partly sunny</span>
                     </div>
-                    <div class="form-group">
-                        <label for="field">Field Assignment</label>
-                        <select class="form-control" id="field" th:field="*{field}" required>
-                            <option value="">-- Select a Field --</option>
-                            <option th:each="field : ${fields}" th:value="${field.id}"
-                                th:text="${field.name + ' (' + field.areaSize + ' Acres)'}"></option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="landSize">Land Size (Hectares)</label>
-                        <input type="number" class="form-control" id="landSize" th:field="*{landSize}" step="any"
-                            min="0" placeholder="0.0">
-                    </div>
-                    <div class="form-group">
-                        <label for="plantingDate">Planting Date</label>
-                        <input type="date" class="form-control" id="plantingDate" th:field="*{plantingDate}">
-                    </div>
-                    <div class="form-group">
-                        <label for="harvestDate">Est. Harvest Date</label>
-                        <input type="date" class="form-control" id="harvestDate" th:field="*{harvestDate}">
-                    </div>
-                    <div class="form-group">
-                        <label for="pesticides">Pesticides / Treatments</label>
-                        <input type="text" class="form-control" id="pesticides" th:field="*{pesticides}"
-                            placeholder="e.g., Organic Fertilizer">
-                    </div>
-
-                    <button type="submit" class="btn-primary">
-                        <i class="fa-solid fa-plus"></i> Add Crop
+                    <button
+                        class="bg-green-600 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-green-200 hover:bg-green-700 transition flex items-center gap-2">
+                        <span>Export</span>
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
                     </button>
-                </form>
+                </div>
             </div>
 
-            <!-- Existing Crops -->
-            <div class="card-panel">
-                <h3 class="card-title">Current Crop Inventory</h3>
-
-                <div th:if="${crops == null || crops.isEmpty()}" style="text-align:center; padding:2rem; color:#888;">
-                    <i class="fa-solid fa-wheat-awn" style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"></i>
-                    <p>No crops recorded yet. Add one above to get started!</p>
+            <!-- Metrics Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Total Crops -->
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-800 font-bold text-lg flex items-center gap-2">
+                                Total Crops <i class="fa-regular fa-circle-question text-gray-400 text-xs"></i>
+                            </p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <h3 class="text-3xl font-bold text-gray-900"><span th:text="${totalCropsCount}">0</span> Types
+                        </h3>
+                    </div>
+                    <p class="text-xs text-green-600 font-bold bg-green-50 inline-block px-2 py-1 rounded-md">
+                        +2% <span class="text-gray-400 font-medium ml-1">from last month</span>
+                    </p>
                 </div>
 
-                <div class="table-responsive" th:if="${crops != null && !crops.isEmpty()}">
-                    <table class="modern-table">
+                <!-- Current Yield -->
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-800 font-bold text-lg flex items-center gap-2">
+                                Current Yield <i class="fa-regular fa-circle-question text-gray-400 text-xs"></i>
+                            </p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                            <i class="fa-solid fa-droplet"></i>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <h3 class="text-3xl font-bold text-gray-900" th:text="${totalYield}">0 tons</h3>
+                    </div>
+                    <p class="text-xs text-green-600 font-bold bg-green-50 inline-block px-2 py-1 rounded-md">
+                        +5.67% <span class="text-gray-400 font-medium ml-1">last month</span>
+                    </p>
+                </div>
+
+                <!-- Growth Status -->
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-800 font-bold text-lg flex items-center gap-2">
+                                Growth Status <i class="fa-regular fa-circle-question text-gray-400 text-xs"></i>
+                            </p>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                            <i class="fa-solid fa-plant-wilt"></i>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <h3 class="text-3xl font-bold text-gray-900" th:text="${growthStatus}">0%</h3>
+                    </div>
+                    <p class="text-xs text-red-500 font-bold bg-red-50 inline-block px-2 py-1 rounded-md">
+                        -1.50% <span class="text-gray-400 font-medium ml-1">from last month</span>
+                    </p>
+                </div>
+
+                <!-- Upcoming Harvests -->
+                <div
+                    class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-800 font-bold text-lg flex items-center gap-2">
+                                Upcoming Harvests <i class="fa-regular fa-circle-question text-gray-400 text-xs"></i>
+                            </p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-cyan-50 flex items-center justify-center text-cyan-600">
+                            <i class="fa-regular fa-calendar"></i>
+                        </div>
+                    </div>
+                    <div class="mb-2"
+                        th:with="firstHarvest=${upcomingHarvests != null && !upcomingHarvests.empty ? upcomingHarvests[0] : null}">
+                        <h3 class="text-3xl font-bold text-gray-900"
+                            th:text="${firstHarvest != null ? #temporals.format(firstHarvest.harvestDate, 'MMM dd, yyyy') : 'No Date'}">
+                            Sep 15, 2024</h3>
+                    </div>
+                    <p class="text-xs text-green-600 font-bold inline-block px-0 py-1 rounded-md">
+                        15 days left until harvest
+                    </p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Crop Harvest Summary -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-gray-800">Crop Harvest Summary</h3>
+                        <div class="flex gap-2">
+                            <select class="bg-gray-50 border border-gray-200 text-xs rounded-lg p-1.5 outline-none">
+                                <option>Corn</option>
+                            </select>
+                            <select class="bg-gray-50 border border-gray-200 text-xs rounded-lg p-1.5 outline-none">
+                                <option>2024</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="harvestSummaryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Crop Growth Monitoring -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 lg:col-span-1">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-gray-800">Crop Growth Monitoring</h3>
+                        <div class="flex gap-2">
+                            <select class="bg-gray-50 border border-gray-200 text-xs rounded-lg p-1.5 outline-none">
+                                <option>Corn</option>
+                            </select>
+                            <select class="bg-gray-50 border border-gray-200 text-xs rounded-lg p-1.5 outline-none">
+                                <option>Days</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="relative h-64">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Field Metrics Overview -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6">Field Metrics Overview</h3>
+                    <div class="relative h-48 flex items-center justify-center">
+                        <canvas id="fieldMetricsChart"></canvas>
+                        <!-- Absolute info -->
+                        <div
+                            class="absolute inset-0 flex flex-col items-center justify-center pt-10 text-center pointer-events-none">
+                            <p class="text-sm font-bold text-gray-800">PH Level - <span
+                                    th:text="${fieldMetrics['phLevel']}">5</span></p>
+                            <p class="text-xs text-gray-500">Temperature - <span
+                                    th:text="${fieldMetrics['temperature']}">26</span>°C</p>
+                            <p class="text-xs text-gray-500">Water Level - <span
+                                    th:text="${fieldMetrics['waterLevel']}">1060</span> liters</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center gap-4 mt-4">
+                        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span><span
+                                class="text-xs text-gray-500">Water Level</span></div>
+                        <div class="flex items-center gap-2"><span
+                                class="w-2 h-2 rounded-full bg-green-500"></span><span class="text-xs text-gray-500">PH
+                                Level</span></div>
+                        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gray-300"></span><span
+                                class="text-xs text-gray-500">Temperature</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Management -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-gray-800">Task Management</h3>
+                    <div class="flex gap-3">
+                        <button
+                            class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-green-200 hover:bg-green-700 transition">
+                            Add New Task +
+                        </button>
+                        <button
+                            class="border border-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-50 transition">
+                            View All >
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
                         <thead>
-                            <tr>
-                                <th>Crop Type</th>
-                                <th>Field</th>
-                                <th>Size (Ha)</th>
-                                <th>Planting Date</th>
-                                <th>Est. Harvest</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                            <tr
+                                class="text-left text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100">
+                                <th class="pb-4 font-semibold">Task Name</th>
+                                <th class="pb-4 font-semibold">Assigned To</th>
+                                <th class="pb-4 font-semibold">Due Date</th>
+                                <th class="pb-4 font-semibold">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="crop : ${crops}">
-                                <td>
-                                    <div style="display:flex; align-items:center; gap:10px;">
-                                        <div
-                                            style="width:35px; height:35px; background:#e8f5e9; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#2e7d32;">
-                                            <i class="fa-solid fa-leaf"></i>
-                                        </div>
-                                        <span th:text="${crop.type}" style="font-weight:600;">Wheat</span>
+                        <tbody class="divide-y divide-gray-50">
+                            <tr th:each="task : ${upcomingTasks}" class="group hover:bg-gray-50 transition-colors">
+                                <td class="py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-2 h-2 rounded-full bg-orange-400"></div>
+                                        <span class="font-bold text-gray-700 sm:text-sm text-xs"
+                                            th:text="${task.activityType}">Fertilize</span>
                                     </div>
                                 </td>
-                                <td th:text="${crop.field != null ? crop.field.name : 'Unassigned'}">North Field</td>
-                                <td th:text="${#numbers.formatDecimal(crop.landSize, 1, 2, 'COMMA')}">5.0</td>
-                                <td
-                                    th:text="${crop.plantingDate != null ? #temporals.format(crop.plantingDate, 'MMM dd, yyyy') : '-'}">
-                                    Mar 15, 2025</td>
-                                <td
-                                    th:text="${crop.harvestDate != null ? #temporals.format(crop.harvestDate, 'MMM dd, yyyy') : '-'}">
-                                    Aug 20, 2025</td>
-                                <td>
-                                    <span class="status-badge badge-success">Active</span>
+                                <td class="py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
+                                            JM</div>
+                                        <span class="text-sm text-gray-600">Jane Miles</span>
+                                    </div>
                                 </td>
-                                <td>
-                                    <a th:href="@{/crop/{id}(id=${crop.id})}" class="action-btn">
-                                        View Details <i class="fa-solid fa-arrow-right" style="font-size:0.8em;"></i>
-                                    </a>
+                                <td class="py-4 text-sm text-gray-500"
+                                    th:text="${#temporals.format(task.activityDate, 'MMM dd, yyyy')}">Sep 15, 2024</td>
+                                <td class="py-4">
+                                    <span
+                                        class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">Pending</span>
+                                </td>
+                            </tr>
+                            <!-- Empty State -->
+                            <tr th:if="${#lists.isEmpty(upcomingTasks)}">
+                                <td colspan="4" class="py-8 text-center text-gray-400 text-sm">No pending tasks found.
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- Hidden Data Checks -->
+            <script th:inline="javascript">
+                // Chart Data Injection
+                const harvestStats = /*[[${harvestStats}]]*/ {};
+                const growthData = /*[[${growthData}]]*/[];
+
+                // --- Harvest Summary Chart ---
+                const harvestCtx = document.getElementById('harvestSummaryChart').getContext('2d');
+                new Chart(harvestCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Wasted', 'Planted', 'Collected'],
+                        datasets: [{
+                            data: [harvestStats.Wasted || 30, harvestStats.Planted || 200, harvestStats.Collected || 170],
+                            backgroundColor: ['#3b82f6', '#22c55e', '#fbbf24'], // Blue, Green, Yellow
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        cutout: '65%',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { usePointStyle: true, font: { family: 'Inter', size: 12 } }
+                            }
+                        }
+                    }
+                });
+
+                // --- Growth Chart ---
+                const growthCtx = document.getElementById('growthChart').getContext('2d');
+                new Chart(growthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1day', '2day', '5day', '6day', '7day', '8day', '9day', '10day'],
+                        datasets: [{
+                            label: 'Height (cm)',
+                            data: growthData.length > 0 ? growthData : [1, 2, 2.5, 3, 3.5, 4, 4.5, 5],
+                            borderColor: '#22c55e',
+                            backgroundColor: (context) => {
+                                const ctx = context.chart.ctx;
+                                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
+                                gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+                                return gradient;
+                            },
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#22c55e',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+                            x: { grid: { display: false } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                // --- Field Metrics Chart (Gauge/Doughnut) ---
+                const fieldCtx = document.getElementById('fieldMetricsChart').getContext('2d');
+                new Chart(fieldCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Water', 'PH', 'Temp'],
+                        datasets: [{
+                            data: [60, 25, 15], // Mock proportions
+                            backgroundColor: ['#3b82f6', '#22c55e', '#e5e7eb'],
+                            circumference: 180,
+                            rotation: 270,
+                            borderWidth: 0,
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        cutout: '80%',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+                    }
+                });
+            </script>
         </div>
     </div>
-
 </body>
 
 </html>

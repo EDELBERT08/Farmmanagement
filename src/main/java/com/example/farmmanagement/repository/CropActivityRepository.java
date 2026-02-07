@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CropActivityRepository extends JpaRepository<CropActivity, Long> {
     List<CropActivity> findByCropId(Long cropId);
+    // Force recompile
 }
