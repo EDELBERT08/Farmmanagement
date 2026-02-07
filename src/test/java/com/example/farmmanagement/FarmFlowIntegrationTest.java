@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -44,6 +45,7 @@ public class FarmFlowIntegrationTest {
     private CropTransactionService transactionService;
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(username = "admin", roles = { "ADMIN" })
     public void testFullFarmManagementFlow() throws Exception {
         // 1. Create a Field
         Field field = new Field();
@@ -103,7 +105,7 @@ public class FarmFlowIntegrationTest {
         // We verify that the page loads and contains our new data (indirectly)
         // Since global totals depend on existing data, we just check for HTTP 200 and
         // model attributes presence
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/home"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("totalCrops"))
