@@ -19,7 +19,7 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
       - run:
           name: Analyze on SonarCloud
-          command: mvn sonar:sonar -Dsonar.organization=YOUR_ORGANIZATION_KEY -Dsonar.projectKey=YOUR_PROJECT_KEY -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+          command: mvn sonar:sonar -Dsonar.organization=edelbert08 -Dsonar.projectKey=EDELBERT08_Farmmanagement -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
 
 workflows:
   version: 2

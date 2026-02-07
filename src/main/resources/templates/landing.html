@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Farm Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .landing-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #7f8c8d;
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+
+        .btn-start {
+            background-color: #508c40;
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(80, 140, 64, 0.3);
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(80, 140, 64, 0.4);
+            background-color: #3e6e32;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="tab-nav" style="justify-content: flex-end; padding: 1rem 2rem; border: none; background: transparent;">
+        <a th:href="@{/login}" class="btn-action"
+            style="background: transparent; color: #508c40; border: 1px solid #508c40;">Login</a>
+    </nav>
+
+    <div class="landing-container">
+        <h1 class="hero-title">Modern Farm Management</h1>
+        <p class="hero-subtitle">Streamline your agricultural operations. Track crops, manage livestock, and analyze
+            finances all in one place.</p>
+        <a th:href="@{/login}" class="btn-start">Get Started</a>
+    </div>
+
+    <footer>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Management Solutions</p>
+    </footer>
+
+</body>
+
+</html>

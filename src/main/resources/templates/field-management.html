@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Field Management</title>
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+        <div class="page-container">
+
+            <!-- Add New Field -->
+            <div class="card-panel">
+                <h3 class="card-title">Add New Field</h3>
+                <form class="modern-form" th:action="@{/field/add}" th:object="${newField}" method="post">
+                    <div class="form-group">
+                        <label for="name">Field Name</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}"
+                            placeholder="e.g., North Acre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location / Description</label>
+                        <input type="text" class="form-control" id="location" th:field="*{location}"
+                            placeholder="e.g., Behind the barn">
+                    </div>
+                    <div class="form-group">
+                        <label for="areaSize">Area Size (Acres)</label>
+                        <input type="number" step="0.1" class="form-control" id="areaSize" th:field="*{areaSize}"
+                            placeholder="e.g., 5.0" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-map-pin"></i> Add Field
+                    </button>
+                </form>
+            </div>
+
+            <!-- Field List -->
+            <div class="card-panel">
+                <h3 class="card-title">Field Registry</h3>
+
+                <div th:if="${fields == null || fields.isEmpty()}" style="text-align:center; padding:2rem; color:#888;">
+                    <i class="fa-solid fa-map" style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"></i>
+                    <p>No fields registered yet.</p>
+                </div>
+
+                <div class="table-responsive" th:if="${fields != null && !fields.isEmpty()}">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Size (Acres)</th>
+                                <th>Current Crops</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="field : ${fields}">
+                                <td style="font-weight:600;" th:text="${field.name}">North Acre</td>
+                                <td th:text="${field.location}">Behind Barn</td>
+                                <td th:text="${field.areaSize}">10.5</td>
+                                <td>
+                                    <span th:if="${field.crops == null || field.crops.isEmpty()}"
+                                        style="color:#888; font-style:italic;">Empty</span>
+                                    <div th:if="${field.crops != null && !field.crops.isEmpty()}">
+                                        <span th:each="crop, iterStat : ${field.crops}"
+                                            th:text="${crop.type} + ${!iterStat.last ? ', ' : ''}" class="status-badge"
+                                            style="background:#e3f2fd; color:#1976D2; margin-right:5px;">Corn</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="#" class="action-btn">
+                                        Manage <i class="fa-solid fa-gear" style="font-size:0.8em;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

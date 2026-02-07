@@ -1,367 +1,99 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Crop Management</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .animal-category-button {
-            cursor: pointer;
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            display: inline-block;
-            min-width: 120px;
-            text-align: center;
-        }
-        .animal-category-button:hover {
-            background-color: #eee;
-        }
-        #animalCategoryList {
-            margin-top: 20px;
-        }
-        #animalDetailsPage {
-            display: none; /* Initially hidden */
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            background-color: #fff;
-            border-radius: 5px;
-        }
-        #animalDetailsPage h3 {
-            margin-top: 0;
-        }
-        #animalDetailsPage ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        #animalDetailsPage ul li {
-            padding: 5px 0;
-        }
-        #backToCategories {
-            cursor: pointer;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-            border-radius: 3px;
-            display: inline-block;
-            margin-top: 10px;
-        }
-        #backToCategories:hover {
-            background-color: #eee;
-        }
-    </style>
+    <title>Livestock Management</title>
 </head>
+
 <body>
-<div class="container">
-    <header>
-        <h1>ANIMALS</h1>
-    </header>
 
-    <nav class="tab-nav">
-        <ul>
-            <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">Home</a></li>
+    <div layout:fragment="content">
+        <div class="page-container">
 
-        </ul>
-    </nav>
+            <!-- Add New Animal -->
+            <div class="card-panel">
+                <h3 class="card-title">Register New Livestock</h3>
+                <form class="modern-form" th:action="@{/animal/add}" th:object="${newAnimal}" method="post">
+                    <div class="form-group">
+                        <label for="name">Name / ID Tag</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}"
+                            placeholder="e.g., Bessie (1042)" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="speciesBreed">Species & Breed</label>
+                        <input type="text" class="form-control" id="speciesBreed" th:field="*{speciesBreed}"
+                            placeholder="e.g., Holstein Cattle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sex">Sex</label>
+                        <select class="form-control" id="sex" th:field="*{sex}">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}">
+                    </div>
+                    <div class="form-group">
+                        <label for="sourceOrigin">Source / Origin</label>
+                        <input type="text" class="form-control" id="sourceOrigin" th:field="*{sourceOrigin}"
+                            placeholder="e.g., Born on Farm">
+                    </div>
+                    <!-- Detailed records can be added in a separate edit view to keep this clean -->
 
-    <main class="content management-content">
-        <h2>Animal Management</h2>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-cow"></i> Register Animal
+                    </button>
+                </form>
+            </div>
 
-        <div id="animalCategoryList">
-            <h3>Animal Categories</h3>
-            <p>Click on a category to view the animals.</p>
-            <div id="categoryButtons">
+            <!-- Animal List -->
+            <div class="card-panel">
+                <h3 class="card-title">Livestock Inventory</h3>
+
+                <div th:if="${animals == null || animals.isEmpty()}"
+                    style="text-align:center; padding:2rem; color:#888;">
+                    <i class="fa-solid fa-paw" style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"></i>
+                    <p>No animals recorded yet.</p>
+                </div>
+
+                <div class="table-responsive" th:if="${animals != null && !animals.isEmpty()}">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Name / Tag</th>
+                                <th>Species / Breed</th>
+                                <th>Sex</th>
+                                <th>Age / DOB</th>
+                                <th>Source</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="animal : ${animals}">
+                                <td style="font-weight:600;" th:text="${animal.name}">Bessie</td>
+                                <td th:text="${animal.speciesBreed}">Cattle</td>
+                                <td th:text="${animal.sex}">Female</td>
+                                <td
+                                    th:text="${animal.dateOfBirth != null ? #temporals.format(animal.dateOfBirth, 'MMM dd, yyyy') : '-'}">
+                                    2023-01-01</td>
+                                <td th:text="${animal.sourceOrigin}">On Farm</td>
+                                <td>
+                                    <a href="#" class="action-btn">
+                                        View Details <i class="fa-solid fa-arrow-right" style="font-size:0.8em;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div id="animalDetailsPage">
-            <h3>Animals in Category: <span id="currentCategory"></span></h3>
-            <ul id="animalNames">
-            </ul>
-            <div id="backToCategories" onclick="showCategoryList()">Back to Categories</div>
-        </div>
-
-        <div>
-            <h3>Add New Animal</h3>
-            <select id="animalType" name="animalType" onchange="showAnimalForm(this.value)">
-                <option value="">-- Select --</option>
-                <option value="cattle">Cattle</option>
-                <option value="poultry">Poultry</option>
-                <option value="sheep">Sheep</option>
-                <option value="goats">Goats</option>
-                <option value="swine">Swine</option>
-            </select>
-        </div>
-
-        <div id="animalForms">
-        </div>
-
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Farm Management System</p>
-    </footer>
-</div>
-
-<script>
-    let animals = {}; // Object to store animals by type
-    const categoryListDiv = document.getElementById('animalCategoryList');
-    const categoryButtonsDiv = document.getElementById('categoryButtons');
-    const animalDetailsPageDiv = document.getElementById('animalDetailsPage');
-
-    function updateAnimalCategoriesDisplay() {
-        categoryButtonsDiv.innerHTML = ''; // Clear previous buttons
-
-        for (const type in animals) {
-            if (animals.hasOwnProperty(type)) {
-                const categoryButton = document.createElement('button');
-                categoryButton.classList.add('animal-category-button');
-                categoryButton.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} (${animals[type].length})`;
-                categoryButton.addEventListener('click', () => displayAnimals(type));
-                categoryButtonsDiv.appendChild(categoryButton);
-            }
-        }
-    }
-
-    function displayAnimals(animalType) {
-        const animalNamesUl = document.getElementById('animalNames');
-        const currentCategorySpan = document.getElementById('currentCategory');
-
-        animalNamesUl.innerHTML = ''; // Clear previous animal list
-        currentCategorySpan.textContent = animalType.charAt(0).toUpperCase() + animalType.slice(1);
-
-        if (animals[animalType] && animals[animalType].length > 0) {
-            animals[animalType].forEach(animal => {
-                const listItem = document.createElement('li');
-                listItem.textContent = animal.uniqueId || animal.name || 'Unnamed Animal'; // Display a basic identifier
-                animalNamesUl.appendChild(listItem);
-            });
-        } else {
-            animalNamesUl.innerHTML = '<li>No animals in this category yet.</li>';
-        }
-
-        categoryListDiv.style.display = 'none'; // Hide the category buttons
-        animalDetailsPageDiv.style.display = 'block'; // Show the animal details page
-    }
-
-    function showCategoryList() {
-        animalDetailsPageDiv.style.display = 'none'; // Hide the animal details page
-        categoryListDiv.style.display = 'block'; // Show the category buttons
-    }
-
-    function showAnimalForm(animalType) {
-        const animalFormsDiv = document.getElementById('animalForms');
-        animalFormsDiv.innerHTML = ''; // Clear previous forms
-
-        if (animalType) {
-            const form = document.createElement('form');
-            form.setAttribute('action', '/animal/add'); // You'll need a controller method to handle this
-            form.setAttribute('method', 'post');
-            form.setAttribute('onsubmit', 'return addAnimal(event, \'' + animalType + '\')'); // Intercept form submission
-
-            // Animal Identification Section
-            const identificationDiv = document.createElement('div');
-            identificationDiv.innerHTML = `
-                <h3>Animal Identification</h3>
-                <div>
-                    <label for="uniqueId">Unique Identification Number/Code:</label>
-                    <input type="text" id="uniqueId" name="uniqueId" required><br><br>
-                </div>
-                <div>
-                    <label for="name">Name (Optional):</label>
-                    <input type="text" id="name" name="name"><br><br>
-                </div>
-                <div>
-                    <label for="speciesBreed">Species/Breed:</label>
-                    <input type="text" id="speciesBreed" name="speciesBreed" required><br><br>
-                </div>
-                <div>
-                    <label for="sex">Sex:</label>
-                    <select id="sex" name="sex">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="unknown">Unknown</option>
-                    </select><br><br>
-                </div>
-                <div>
-                    <label for="dateOfBirth">Date of Birth/Age:</label>
-                    <input type="date" id="dateOfBirth" name="dateOfBirth"><br><br>
-                    <small>Or enter age:</small> <input type="text" id="age" name="age" placeholder="e.g., 2 years"><br><br>
-                </div>
-                <div>
-                    <label for="sourceOrigin">Source/Origin:</label>
-                    <input type="text" id="sourceOrigin" name="sourceOrigin"><br><br>
-                </div>
-            `;
-            form.appendChild(identificationDiv);
-
-            // Health Records Section
-            const healthRecordsDiv = document.createElement('div');
-            healthRecordsDiv.innerHTML = `
-                <h3>Health Records</h3>
-                <div>
-                    <label for="vaccinationHistory">Vaccination History:</label>
-                    <textarea id="vaccinationHistory" name="vaccinationHistory"></textarea><br><br>
-                </div>
-                <div>
-                    <label for="deworming">Deworming/Parasite Control:</label>
-                    <textarea id="deworming" name="deworming"></textarea><br><br>
-                </div>
-                <div>
-                    <label for="illnessesInjuries">Illnesses and Injuries:</label>
-                    <textarea id="illnessesInjuries" name="illnessesInjuries"></textarea><br><br>
-                </div>
-                <div>
-                    <label for="medicationAdministration">Medication Administration:</label>
-                    <textarea id="medicationAdministration" name="medicationAdministration"></textarea><br><br>
-                </div>
-                <div>
-                    <label for="veterinaryVisits">Veterinary Visits:</label>
-                    <textarea id="veterinaryVisits" name="veterinaryVisits"></textarea><br><br>
-                </div>
-            `;
-            form.appendChild(healthRecordsDiv);
-
-            // Breeding Records (Cattle Specific)
-            if (animalType === 'cattle') {
-                const breedingRecordsDiv = document.createElement('div');
-                breedingRecordsDiv.innerHTML = `
-                    <h3>Breeding Records</h3>
-                    <div>
-                        <label for="matingDate">Mating/Breeding Date:</label>
-                        <input type="date" id="matingDate" name="matingDate"><br><br>
-                    </div>
-                    <div>
-                        <label for="sireId">Sire (Male Parent) Identification:</label>
-                        <input type="text" id="sireId" name="sireId"><br><br>
-                    </div>
-                    <div>
-                        <label for="damId">Dam (Female Parent) Identification:</label>
-                        <input type="text" id="damId" name="damId"><br><br>
-                    </div>
-                    <div>
-                        <label for="pregnancyStatus">Pregnancy Status:</label>
-                        <select id="pregnancyStatus" name="pregnancyStatus">
-                            <option value="">-- Select --</option>
-                            <option value="pregnant">Pregnant</option>
-                            <option value="not_pregnant">Not Pregnant</option>
-                            <option value="unknown">Unknown</option>
-                        </select><br><br>
-                    </div>
-                    <div>
-                        <label for="estimatedDueDate">Estimated Due Date:</label>
-                        <input type="date" id="estimatedDueDate" name="estimatedDueDate"><br><br>
-                    </div>
-                    <div>
-                        <label for="birthingInfo">Birthing/Litter Information:</label>
-                        <textarea id="birthingInfo" name="birthingInfo"></textarea><br><br>
-                    </div>
-                    <div>
-                        <label for="weaningDate">Weaning Date:</label>
-                        <input type="date" id="weaningDate" name="weaningDate"><br><br>
-                    </div>
-                `;
-                form.appendChild(breedingRecordsDiv);
-            }
-
-            // Production Records (Cattle Specific)
-            if (animalType === 'cattle') {
-                const productionRecordsDiv = document.createElement('div');
-                productionRecordsDiv.innerHTML = `
-                    <h3>Production Records</h3>
-                    <div>
-                        <label for="milkProduction">Milk Production:</label>
-                        <textarea id="milkProduction" name="milkProduction" placeholder="e.g., Daily records"></textarea><br><br>
-                    </div>
-                `;
-                form.appendChild(productionRecordsDiv);
-            }
-
-            // Production Records (Poultry Specific)
-            if (animalType === 'poultry') {
-                const productionRecordsDiv = document.createElement('div');
-                productionRecordsDiv.innerHTML = `
-                    <h3>Production Records</h3>
-                    <div>
-                        <label for="eggProduction">Egg Production:</label>
-                        <textarea id="eggProduction" name="eggProduction" placeholder="e.g., Number of eggs laid daily"></textarea><br><br>
-                    </div>
-                `;
-                form.appendChild(productionRecordsDiv);
-            }
-
-            // Feeding and Nutrition Section
-            const feedingNutritionDiv = document.createElement('div');
-            feedingNutritionDiv.innerHTML = `
-                <h3>Feeding and Nutrition</h3>
-                <div>
-                    <label for="feedType">Feed Type and Quantity:</label>
-                    <textarea id="feedType" name="feedType"></textarea><br><br>
-                </div>
-                <div>
-                    <label for="feedingSchedule">Feeding Schedule:</label>
-                    <textarea id="feedingSchedule" name="feedingSchedule"></textarea><br><br>
-                </div>
-                <div>
-                    <label for="waterIntake">Water Intake:</label>
-                    <input type="text" id="waterIntake" name="waterIntake"><br><br>
-                </div>
-                <div>
-                    <label for="dietChanges">Changes in Diet:</label>
-                    <textarea id="dietChanges" name="dietChanges"></textarea><br><br>
-                </div>
-            `;
-            form.appendChild(feedingNutritionDiv);
-
-            const submitButton = document.createElement('button');
-            submitButton.setAttribute('type', 'submit');
-            submitButton.textContent = `Add ${animalType.charAt(0).toUpperCase() + animalType.slice(1)}`;
-            form.appendChild(submitButton);
-
-            animalFormsDiv.appendChild(form);
-        }
-    }
-
-    function addAnimal(event, animalType) {
-        event.preventDefault(); // Prevent the default form submission
-
-        const form = event.target;
-        const uniqueIdInput = form.querySelector('#uniqueId');
-        const nameInput = form.querySelector('#name');
-
-        const newAnimal = {
-            uniqueId: uniqueIdInput.value,
-            name: nameInput.value
-            // You can collect other relevant data here if needed for display
-        };
-
-        if (!animals[animalType]) {
-            animals[animalType] = [];
-        }
-        animals[animalType].push(newAnimal);
-
-        updateAnimalCategoriesDisplay();
-
-        // Optionally clear the form after adding
-        form.reset();
-        document.getElementById('animalForms').innerHTML = '';
-        document.getElementById('animalType').value = ''; // Reset the animal type dropdown
-
-        return false; // To prevent actual form submission
-    }
-
-    function showCategoryListOnLoad() {
-        animalDetailsPageDiv.style.display = 'none';
-        categoryListDiv.style.display = 'block';
-        updateAnimalCategoriesDisplay();
-    }
-
-    // Initial display of categories
-    showCategoryListOnLoad();
-</script>
 </body>
+
 </html>

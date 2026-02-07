@@ -17,7 +17,8 @@ import org.springframework.format.annotation.DateTimeFormat; // Important for da
 public class Crop {
 
     @Id // Marks this field as the primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Configures how the primary key is generated (auto-increment in most cases)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Configures how the primary key is generated (auto-increment
+                                                        // in most cases)
     private Long id; // Add a primary key field
 
     private String type;
@@ -31,6 +32,10 @@ public class Crop {
 
     private String pesticides;
 
+    @ManyToOne
+    @JoinColumn(name = "field_id")
+    private Field field;
+
     // --- Constructors ---
     public Crop() {
     }
@@ -42,6 +47,5 @@ public class Crop {
         this.harvestDate = harvestDate;
         this.pesticides = pesticides;
     }
-
 
 }

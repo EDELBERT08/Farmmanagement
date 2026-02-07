@@ -34,5 +34,14 @@ public class CropService {
         cropRepository.deleteById(id);
     }
 
+    public long countCrops() {
+        return cropRepository.count();
+    }
+
+    public java.util.Map<String, Long> getCropTypeDistribution() {
+        return cropRepository.findAll().stream()
+                .collect(java.util.stream.Collectors.groupingBy(Crop::getType, java.util.stream.Collectors.counting()));
+    }
+
     // Add other business logic methods here
 }

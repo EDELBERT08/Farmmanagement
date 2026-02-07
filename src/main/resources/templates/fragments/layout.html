@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - FarmVista">FarmVista</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Optional: specific head content from pages -->
+    <th:block layout:fragment="head"></th:block>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-seedling"></i>
+            <span>FarmVista</span>
+        </div>
+        <nav class="sidebar-menu">
+            <a th:href="@{/home}" class="nav-item" th:classappend="${activePage == 'home'} ? 'active' : ''">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </a>
+            <a th:href="@{/crop}" class="nav-item" th:classappend="${activePage == 'crop'} ? 'active' : ''">
+                <i class="fa-solid fa-wheat-awn"></i> Crop Management
+            </a>
+            <a th:href="@{/animal}" class="nav-item" th:classappend="${activePage == 'animal'} ? 'active' : ''">
+                <i class="fa-solid fa-cow"></i> Livestock
+            </a>
+            <a th:href="@{/field}" class="nav-item" th:classappend="${activePage == 'field'} ? 'active' : ''">
+                <i class="fa-solid fa-map-location-dot"></i> Fields
+            </a>
+            <a th:href="@{/produce}" class="nav-item" th:classappend="${activePage == 'produce'} ? 'active' : ''">
+                <i class="fa-solid fa-basket-shopping"></i> Produce
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit"
+                    style="background:none; border:none; color:#d32f2f; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-title">
+                <h2 th:text="${pageTitle != null ? pageTitle : 'Farm Management'}">Page Title</h2>
+                <p>Manage your farm operations efficiently.</p>
+            </div>
+            <div class="header-actions">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <span
+                            th:text="${#authentication != null ? #strings.substring(#authentication.name,0,1) : 'U'}">U</span>
+                    </div>
+                    <span th:text="${#authentication != null ? #authentication.name : 'Guest'}"
+                        style="font-weight:600; font-size:0.9rem;">User</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Injected Here -->
+        <div layout:fragment="content"></div>
+    </main>
+
+</body>
+
+</html>

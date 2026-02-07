@@ -22,7 +22,7 @@ public class AnimalService {
         return animalRepository.findAll();
     }
 
-    public Optional<Animal> getAnimalById(String id) {
+    public Optional<Animal> getAnimalById(Long id) {
         return animalRepository.findById(id);
     }
 
@@ -30,7 +30,11 @@ public class AnimalService {
         return animalRepository.save(animal);
     }
 
-    public void deleteAnimal(String id) {
+    public void deleteAnimal(Long id) {
         animalRepository.deleteById(id);
+    }
+
+    public long countAnimals() {
+        return animalRepository.count();
     }
 }
