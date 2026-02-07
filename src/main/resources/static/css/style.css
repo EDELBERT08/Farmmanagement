@@ -1,0 +1,811 @@
+/* Basic Reset / Body Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header Styling */
+header {
+    background-color: #508D4E; /* Greenish */
+    color: #fff;
+    padding: 1rem 2rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* Tab Navigation Styling */
+.tab-nav {
+    background-color: #e2e2e2;
+    padding: 0.5rem 2rem;
+    border-bottom: 3px solid #508D4E; /* Greenish border */
+}
+
+.tab-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Arrange tabs horizontally */
+    gap: 15px; /* Space between tabs */
+}
+
+.tab-nav li {
+    display: inline-block; /* Keep items inline */
+}
+
+.tab-nav a {
+    display: block;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    border-radius: 5px 5px 0 0; /* Rounded top corners */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tab-nav a:hover {
+    background-color: #d0d0d0;
+    color: #000;
+}
+
+/* Style for the active tab */
+.tab-nav a.active {
+    background-color: #ffffff; /* White background for active */
+    color: #508D4E; /* Greenish text */
+    border-bottom: 3px solid #ffffff; /* Makes it look connected to content */
+    position: relative;
+    top: 3px; /* Align with the bottom border of the nav bar */
+}
+
+
+/* Main Content Area Styling */
+.content {
+    padding: 2rem;
+    background-color: #ffffff;
+    margin: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-height: 300px; /* Ensure some height */
+}
+
+.content h2 {
+    color: #508D4E; /* Greenish */
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.management-content button {
+    background-color: #508D4E;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.management-content button:hover {
+     background-color: #40753E; /* Darker green */
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #e2e2e2;
+    color: #555;
+    font-size: 0.9em;
+}
+
+    /* --- Additions/Modifications to your existing CSS --- */
+
+/* Form Styling */
+.crop-form {
+    background-color: #ffffff; /* Match content background */
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem; /* Space below the form */
+    /* Optional: Use Grid for better alignment */
+    display: grid;
+    grid-template-columns: auto 1fr; /* Label | Input */
+    gap: 1rem; /* Space between rows and columns */
+    align-items: center; /* Vertically align label and input */
+}
+
+.crop-form .form-group {
+    /* If not using grid on the parent, uncomment these: */
+    /* margin-bottom: 1rem; */
+    /* display: flex; */
+    /* flex-direction: column; */
+
+    /* These styles apply when using grid on the parent */
+    display: contents; /* Allows grid layout to apply directly to label/input */
+}
+
+
+.crop-form label {
+    font-weight: bold;
+    margin-bottom: 0; /* Remove bottom margin if using grid gap */
+    /* grid-column: 1 / 2; */ /* Explicitly place label in first column */
+     text-align: right; /* Align label text to the right */
+     padding-right: 10px;
+}
+
+.crop-form input[type="text"],
+.crop-form input[type="number"],
+.crop-form input[type="date"] {
+    width: 100%; /* Make inputs fill their grid cell */
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding and border in width */
+     /* grid-column: 2 / 3; */ /* Explicitly place input in second column */
+}
+
+/* Style the submit button specifically within this form if needed,
+   or rely on the generic .management-content button style */
+.crop-form button {
+    /* Place button across both columns or adjust grid */
+    grid-column: 1 / -1; /* Span across all columns */
+    justify-self: start; /* Align button to the start of the grid area */
+    margin-top: 1rem; /* Add some space above the button */
+    /* Inherits styles from .management-content button */
+}
+
+/* Divider Style */
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-color: #eee;
+    margin: 2.5rem 0; /* Add significant space around the divider */
+}
+
+
+/* Table Styling */
+.crop-table {
+    width: 100%;
+    border-collapse: collapse; /* Merge cell borders */
+    margin-top: 1.5rem; /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.crop-table th,
+.crop-table td {
+    border: 1px solid #ddd;
+    padding: 0.8rem 1rem; /* More padding in cells */
+    text-align: left;
+    vertical-align: middle; /* Align text vertically */
+}
+
+.crop-table thead th {
+    background-color: #f2f2f2; /* Light grey header */
+    font-weight: bold;
+    color: #333;
+}
+
+.crop-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for readability */
+}
+
+.crop-table tbody tr:hover {
+    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+}
+
+/* Ensure management-content class is applied if buttons are inside */
+.management-content h3 {
+     color: #444; /* Slightly darker heading for sections */
+     margin-top: 1.5rem;
+     margin-bottom: 1rem;
+     padding-bottom: 0.3rem;
+     border-bottom: 1px solid #eee;
+}
+
+/* Adjust padding inside main content if needed */
+.content.management-content {
+    padding: 2rem 2.5rem; /* Slightly more horizontal padding */
+}
+/* --- Base Styles (Example - Add or Modify as needed) --- */
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light background for the page */
+    color: #333;
+}
+
+header {
+    background-color: #508c40; /* Example green */
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+nav.tab-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center; /* Center tabs */
+    border-bottom: 2px solid #ccc;
+}
+
+nav.tab-nav li {
+    margin: 0;
+}
+
+nav.tab-nav a {
+    display: block;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    border-bottom: 3px solid transparent; /* For active state */
+}
+
+nav.tab-nav a:hover {
+    background-color: #d0d0d0;
+}
+
+nav.tab-nav a.active {
+    color: #508c40; /* Match header green */
+    border-bottom-color: #508c40; /* Active indicator */
+}
+
+main.content {
+    max-width: 960px; /* Limit content width */
+    margin: 2rem auto; /* Center content with space */
+    padding: 1.5rem;
+    background-color: #ffffff; /* White background for content area */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* --- Styles moved from the HTML <style> block --- */
+
+/* Form Styling */
+.crop-form {
+    background-color: #ffffff; /* Match content background */
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem; /* Space below the form */
+    display: grid;
+    grid-template-columns: auto 1fr; /* Label | Input */
+    gap: 1rem; /* Space between rows and columns */
+    align-items: center; /* Vertically align label and input */
+}
+
+.crop-form .form-group {
+    /* These styles apply when using grid on the parent */
+    display: contents; /* Allows grid layout to apply directly to label/input */
+}
+
+.crop-form label {
+    font-weight: bold;
+    text-align: right; /* Align label text to the right */
+    padding-right: 10px; /* Space between label and input */
+    /* grid-column: 1 / 2; */ /* Implicit placement */
+}
+
+.crop-form input[type="text"],
+.crop-form input[type="number"],
+.crop-form input[type="date"] {
+    width: 100%; /* Make inputs fill their grid cell */
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding and border in width */
+     /* grid-column: 2 / 3; */ /* Implicit placement */
+}
+
+/* General Button Styling (applied via inheritance or specific class) */
+button, .button { /* Style <button> elements and elements with class="button" */
+    background-color: #508c40; /* Example Green */
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+button:hover, .button:hover {
+    background-color: #407533; /* Darker green on hover */
+}
+
+/* Specific placement for the form's submit button */
+.crop-form button[type="submit"] {
+    grid-column: 1 / -1; /* Span across all columns */
+    justify-self: start; /* Align button to the start of the grid area */
+    margin-top: 1rem; /* Add some space above the button */
+}
+
+/* Divider Style */
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-color: #eee;
+    margin: 2.5rem 0; /* Add significant space around the divider */
+}
+
+/* General Heading Styles within management content */
+.management-content h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #508c40; /* Thicker border under main title */
+}
+
+.management-content h3 {
+    color: #444; /* Slightly darker heading for sections */
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #eee; /* Lighter border under section titles */
+}
+
+/* Table Styling */
+.crop-table {
+    width: 100%;
+    border-collapse: collapse; /* Merge cell borders */
+    margin-top: 1.5rem; /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.crop-table th,
+.crop-table td {
+    border: 1px solid #ddd;
+    padding: 0.8rem 1rem; /* More padding in cells */
+    text-align: left;
+    vertical-align: middle; /* Align text vertically */
+}
+
+.crop-table thead th {
+    background-color: #f2f2f2; /* Light grey header */
+    font-weight: bold;
+    color: #333;
+}
+
+.crop-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for readability */
+}
+
+.crop-table tbody tr:hover {
+    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+}
+
+/* Adjust padding inside main content if needed */
+/* .content.management-content { */
+    /* Padding is already set in main.content rule */
+/* } */
+
+/* Add other base styles for html, body, links, etc. if needed */
+/* Basic Reset / Body Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header Styling */
+header {
+    background-color: #508D4E; /* Greenish */
+    color: #fff;
+    padding: 1rem 2rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* Tab Navigation Styling */
+.tab-nav {
+    background-color: #e2e2e2;
+    padding: 0.5rem 2rem;
+    border-bottom: 3px solid #508D4E; /* Greenish border */
+}
+
+.tab-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Arrange tabs horizontally */
+    gap: 15px; /* Space between tabs */
+}
+
+.tab-nav li {
+    display: inline-block; /* Keep items inline */
+}
+
+.tab-nav a {
+    display: block;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    border-radius: 5px 5px 0 0; /* Rounded top corners */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tab-nav a:hover {
+    background-color: #d0d0d0;
+    color: #000;
+}
+
+/* Style for the active tab */
+.tab-nav a.active {
+    background-color: #ffffff; /* White background for active */
+    color: #508D4E; /* Greenish text */
+    border-bottom: 3px solid #ffffff; /* Makes it look connected to content */
+    position: relative;
+    top: 3px; /* Align with the bottom border of the nav bar */
+}
+
+
+/* Main Content Area Styling */
+.content {
+    padding: 2rem;
+    background-color: #ffffff;
+    margin: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-height: 300px; /* Ensure some height */
+}
+
+.content h2 {
+    color: #508D4E; /* Greenish */
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.management-content button {
+    background-color: #508D4E;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.management-content button:hover {
+     background-color: #40753E; /* Darker green */
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #e2e2e2;
+    color: #555;
+    font-size: 0.9em;
+}
+
+    /* --- Additions/Modifications to your existing CSS --- */
+
+/* Form Styling */
+.crop-form {
+    background-color: #ffffff; /* Match content background */
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem; /* Space below the form */
+    /* Optional: Use Grid for better alignment */
+    display: grid;
+    grid-template-columns: auto 1fr; /* Label | Input */
+    gap: 1rem; /* Space between rows and columns */
+    align-items: center; /* Vertically align label and input */
+}
+
+.crop-form .form-group {
+    /* These styles apply when using grid on the parent */
+    display: contents; /* Allows grid layout to apply directly to label/input */
+}
+
+
+.crop-form label {
+    font-weight: bold;
+    margin-bottom: 0; /* Remove bottom margin if using grid gap */
+    /* grid-column: 1 / 2; */ /* Explicitly place label in first column */
+     text-align: right; /* Align label text to the right */
+     padding-right: 10px;
+}
+
+.crop-form input[type="text"],
+.crop-form input[type="number"],
+.crop-form input[type="date"] {
+    width: 100%; /* Make inputs fill their grid cell */
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding and border in width */
+     /* grid-column: 2 / 3; */ /* Explicitly place input in second column */
+}
+
+/* Style the submit button specifically within this form if needed,
+   or rely on the generic .management-content button style */
+.crop-form button {
+    /* Place button across both columns or adjust grid */
+    grid-column: 1 / -1; /* Span across all columns */
+    justify-self: start; /* Align button to the start of the grid area */
+    margin-top: 1rem; /* Add some space above the button */
+    /* Inherits styles from .management-content button */
+}
+
+/* Divider Style */
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-color: #eee;
+    margin: 2.5rem 0; /* Add significant space around the divider */
+}
+
+
+/* Table Styling */
+.crop-table {
+    width: 100%;
+    border-collapse: collapse; /* Merge cell borders */
+    margin-top: 1.5rem; /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.crop-table th,
+.crop-table td {
+    border: 1px solid #ddd;
+    padding: 0.8rem 1rem; /* More padding in cells */
+    text-align: left;
+    vertical-align: middle; /* Align text vertically */
+}
+
+.crop-table thead th {
+    background-color: #f2f2f2; /* Light grey header */
+    font-weight: bold;
+    color: #333;
+}
+
+.crop-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for readability */
+}
+
+.crop-table tbody tr:hover {
+    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+}
+
+/* Ensure management-content class is applied if buttons are inside */
+.management-content h3 {
+     color: #444; /* Slightly darker heading for sections */
+     margin-top: 1.5rem;
+     margin-bottom: 1rem;
+     padding-bottom: 0.3rem;
+     border-bottom: 1px solid #eee;
+}
+
+/* Adjust padding inside main content if needed */
+.content.management-content {
+    padding: 2rem 2.5rem; /* Slightly more horizontal padding */
+}
+/* --- Base Styles (Example - Add or Modify as needed) --- */
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light background for the page */
+    color: #333;
+}
+
+header {
+    background-color: #508c40; /* Example green */
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+nav.tab-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center; /* Center tabs */
+    border-bottom: 2px solid #ccc;
+}
+
+nav.tab-nav li {
+    margin: 0;
+}
+
+nav.tab-nav a {
+    display: block;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    border-bottom: 3px solid transparent; /* For active state */
+}
+
+nav.tab-nav a:hover {
+    background-color: #d0d0d0;
+}
+
+nav.tab-nav a.active {
+    color: #508c40; /* Match header green */
+    border-bottom-color: #508c40; /* Active indicator */
+}
+
+main.content {
+    max-width: 960px; /* Limit content width */
+    margin: 2rem auto; /* Center content with space */
+    padding: 1.5rem;
+    background-color: #ffffff; /* White background for content area */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* --- Styles moved from the HTML <style> block --- */
+
+/* Form Styling */
+.crop-form {
+    background-color: #ffffff; /* Match content background */
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem; /* Space below the form */
+    display: grid;
+    grid-template-columns: auto 1fr; /* Label | Input */
+    gap: 1rem; /* Space between rows and columns */
+    align-items: center; /* Vertically align label and input */
+}
+
+.crop-form .form-group {
+    /* These styles apply when using grid on the parent */
+    display: contents; /* Allows grid layout to apply directly to label/input */
+}
+
+.crop-form label {
+    font-weight: bold;
+    text-align: right; /* Align label text to the right */
+    padding-right: 10px; /* Space between label and input */
+    /* grid-column: 1 / 2; */ /* Implicit placement */
+}
+
+.crop-form input[type="text"],
+.crop-form input[type="number"],
+.crop-form input[type="date"] {
+    width: 100%; /* Make inputs fill their grid cell */
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding and border in width */
+     /* grid-column: 2 / 3; */ /* Implicit placement */
+}
+
+/* General Button Styling (applied via inheritance or specific class) */
+button, .button { /* Style <button> elements and elements with class="button" */
+    background-color: #508c40; /* Example Green */
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+button:hover, .button:hover {
+    background-color: #407533; /* Darker green on hover */
+}
+
+/* Specific placement for the form's submit button */
+.crop-form button[type="submit"] {
+    grid-column: 1 / -1; /* Span across all columns */
+    justify-self: start; /* Align button to the start of the grid area */
+    margin-top: 1rem; /* Add some space above the button */
+}
+
+/* Divider Style */
+.section-divider {
+    border: 0;
+    height: 1px;
+    background-color: #eee;
+    margin: 2.5rem 0; /* Add significant space around the divider */
+}
+
+/* General Heading Styles within management content */
+.management-content h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #508c40; /* Thicker border under main title */
+}
+
+.management-content h3 {
+    color: #444; /* Slightly darker heading for sections */
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #eee; /* Lighter border under section titles */
+}
+
+/* Table Styling */
+.crop-table {
+    width: 100%;
+    border-collapse: collapse; /* Merge cell borders */
+    margin-top: 1.5rem; /* Space above the table */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.crop-table th,
+.crop-table td {
+    border: 1px solid #ddd;
+    padding: 0.8rem 1rem; /* More padding in cells */
+    text-align: left;
+    vertical-align: middle; /* Align text vertically */
+}
+
+.crop-table thead th {
+    background-color: #f2f2f2; /* Light grey header */
+    font-weight: bold;
+    color: #333;
+}
+
+.crop-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping for readability */
+}
+
+.crop-table tbody tr:hover {
+    background-color: #e8f5e9; /* Highlight row on hover (light green) */
+}
+
+/* Adjust padding inside main content if needed */
+/* .content.management-content { */
+    /* Padding is already set in main.content rule */
+/* } */
+
+/* Add other base styles for html, body, links, etc. if needed */

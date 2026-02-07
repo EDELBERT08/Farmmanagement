@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Dashboard</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+</head>
+<body>
+<header>
+    <h1>Farm Management System</h1>
+</header>
+
+<nav class="tab-nav">
+    <ul>
+        <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">HOME</a></li>
+        <li><a th:href="@{/crop}" th:classappend="${activePage == 'crop'} ? 'active' : ''">CROP MANAGEMENT</a></li>
+        <li><a th:href="@{/animal}" th:classappend="${activePage == 'animal'} ? 'active' : ''">ANIMAL MANAGEMENT</a></li>
+        <li><a th:href="@{/produce}" th:classappend="${activePage == 'produce'} ? 'active' : ''">PRODUCE MANAGEMENT</a></li>
+    </ul>
+</nav>
+
+<main class="content">
+    <h2 th:text="${pageTitle}">Welcome</h2>
+    <p>This is the main dashboard area. Select a management section above.</p>
+</main>
+
+<footer>
+    <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Management Solutions</p>
+</footer>
+</body>
+</html>
