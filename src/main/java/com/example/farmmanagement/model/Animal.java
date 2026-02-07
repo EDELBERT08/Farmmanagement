@@ -18,8 +18,7 @@ public class Animal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String uniqueID; // uniqueID is currently a String. If auto-increment (IDENTITY) failure occurs,
-                             // consider changing to Long or UUID.
+    private Long id;
 
     private String name;
     private String speciesBreed;

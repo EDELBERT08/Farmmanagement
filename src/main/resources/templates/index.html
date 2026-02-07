@@ -1,32 +1,137 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farm Dashboard</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
-<header>
-    <h1>Farm Management System</h1>
-</header>
 
-<nav class="tab-nav">
-    <ul>
-        <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">HOME</a></li>
-        <li><a th:href="@{/crop}" th:classappend="${activePage == 'crop'} ? 'active' : ''">CROP MANAGEMENT</a></li>
-        <li><a th:href="@{/animal}" th:classappend="${activePage == 'animal'} ? 'active' : ''">ANIMAL MANAGEMENT</a></li>
-        <li><a th:href="@{/produce}" th:classappend="${activePage == 'produce'} ? 'active' : ''">PRODUCE MANAGEMENT</a></li>
-    </ul>
-</nav>
+    <header>
+        <h1>Farm Management System</h1>
+    </header>
 
-<main class="content">
-    <h2 th:text="${pageTitle}">Welcome</h2>
-    <p>This is the main dashboard area. Select a management section above.</p>
-</main>
+    <nav class="tab-nav" style="display: flex; justify-content: space-between; align-items: center;">
+        <ul style="display: flex; gap: 15px; margin: 0; padding: 0;">
+            <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">DASHBOARD</a></li>
+            <li><a th:href="@{/field}" th:classappend="${activePage == 'field'} ? 'active' : ''">FIELDS</a></li>
+            <li><a th:href="@{/crop}" th:classappend="${activePage == 'crop'} ? 'active' : ''">CROPS</a></li>
+            <li><a th:href="@{/animal}" th:classappend="${activePage == 'animal'} ? 'active' : ''">ANIMALS</a></li>
+            <li><a th:href="@{/produce}" th:classappend="${activePage == 'produce'} ? 'active' : ''">PRODUCE</a></li>
+        </ul>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span th:text="${'Welcome, ' + #authentication.name}" style="font-weight: bold; color: #508D4E;">User</span>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit"
+                    style="background: none; border: 1px solid #c0392b; color: #c0392b; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Logout</button>
+            </form>
+        </div>
+    </nav>
 
-<footer>
-    <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Management Solutions</p>
-</footer>
+    <main class="content dashboard-container">
+        <div class="welcome-section">
+            <h2 th:text="'Hello, Farmer!'">Hello, Farmer!</h2>
+            <p>Here is your farm's performance overview.</p>
+        </div>
+
+        <!-- 1. Key Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Crops</h3>
+                <p class="stat-number" th:text="${totalCrops}">0</p>
+                <span class="stat-label">Active Plantings</span>
+            </div>
+            <div class="stat-card">
+                <h3>Total Animals</h3>
+                <p class="stat-number" th:text="${totalAnimals}">0</p>
+                <span class="stat-label">Livestock Count</span>
+            </div>
+            <div class="stat-card income-card">
+                <h3>Total Income</h3>
+                <p class="stat-number money" th:text="${#numbers.formatCurrency(globalIncome)}">$0.00</p>
+                <span class="stat-label">YTD Revenue</span>
+            </div>
+            <div class="stat-card expense-card">
+                <h3>Total Expenses</h3>
+                <p class="stat-number money" th:text="${#numbers.formatCurrency(globalExpense)}">$0.00</p>
+                <span class="stat-label">YTD Costs</span>
+            </div>
+        </div>
+
+        <!-- 2. Main Dashboard Layout -->
+        <div class="dashboard-main">
+            <!-- Chart Section -->
+            <div class="chart-container">
+                <h3>Financial Overview</h3>
+                <canvas id="financeChart"></canvas>
+            </div>
+
+            <!-- Quick Actions & Recent Activity -->
+            <div class="action-panel">
+                <h3>Quick Actions</h3>
+                <div class="quick-buttons">
+                    <a th:href="@{/crop}" class="btn-action">Add New Crop</a>
+                    <a th:href="@{/field}" class="btn-action">Manage Fields</a>
+                    <a th:href="@{/animal}" class="btn-action">Register Animal</a>
+                </div>
+
+                <div class="financial-summary">
+                    <h3>Net Profit</h3>
+                    <p class="net-profit" th:classappend="${globalProfit >= 0} ? 'profit-positive' : 'profit-negative'"
+                        th:text="${#numbers.formatCurrency(globalProfit)}">$0.00</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Management Solutions</p>
+    </footer>
+
+    <!-- Chart Initialization Script -->
+    <script th:inline="javascript">
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        const income = [[${ globalIncome }]];
+        const expense = [[${ globalExpense }]];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Income', 'Expenses'],
+                datasets: [{
+                    label: 'Amount ($)',
+                    data: [income, expense],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)', // Green for Income
+                        'rgba(255, 99, 132, 0.6)'  // Red for Expense
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+
 </body>
+
 </html>

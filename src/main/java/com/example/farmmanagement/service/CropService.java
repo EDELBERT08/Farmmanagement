@@ -34,5 +34,9 @@ public class CropService {
         cropRepository.deleteById(id);
     }
 
+    public long countCrops() {
+        return cropRepository.count();
+    }
+
     // Add other business logic methods here
 }

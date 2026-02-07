@@ -1,89 +1,108 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${pageTitle}">Crop Management</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
 
-<header>
-    <h1>CROPS</h1>
-</header>
+    <header>
+        <h1>CROPS</h1>
+    </header>
 
-<nav class="tab-nav">
-    <ul>
-        <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">Home</a></li>
+    <nav class="tab-nav">
+        <ul>
+            <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">Home</a></li>
 
-    </ul>
-</nav>
+        </ul>
+    </nav>
 
-<main class="content management-content">
-    <h2 th:text="${pageTitle}">Crop Management</h2>
+    <main class="content management-content">
+        <h2 th:text="${pageTitle}">Crop Management</h2>
 
-    <h3>Add New Crop</h3>
-    <form class="crop-form" th:action="@{/crop/add}" th:object="${newCrop}" method="post">
-        <div class="form-group">
-            <label for="type">Type of Crop:</label>
-            <input type="text" id="type" th:field="*{type}" required placeholder="e.g., Maize, Beans">
+        <h3>Add New Crop</h3>
+        <form class="crop-form" th:action="@{/crop/add}" th:object="${newCrop}" method="post">
+            <div class="form-group">
+                <label for="type">Type of Crop:</label>
+                <input type="text" id="type" th:field="*{type}" required placeholder="e.g., Maize, Beans">
+            </div>
+            <div class="form-group">
+                <label for="field">Field:</label>
+                <select id="field" th:field="*{field}" required>
+                    <option value="">Select a Field</option>
+                    <option th:each="field : ${fields}" th:value="${field.id}"
+                        th:text="${field.name + ' (' + field.areaSize + ' Acres)'}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="landSize">Land Size (Hectares):</label>
+                <input type="number" id="landSize" th:field="*{landSize}" step="any" min="0" placeholder="e.g., 1.5">
+            </div>
+            <div class="form-group">
+                <label for="plantingDate">Planting Date:</label>
+                <input type="date" id="plantingDate" th:field="*{plantingDate}">
+            </div>
+            <div class="form-group">
+                <label for="harvestDate">Estimate Harvest Date:</label>
+                <input type="date" id="harvestDate" th:field="*{harvestDate}">
+            </div>
+            <div class="form-group">
+                <label for="pesticides">Pesticides Used:</label>
+                <input type="text" id="pesticides" th:field="*{pesticides}" placeholder="e.g., None, Specific Brand">
+            </div>
+
+            <button type="submit">Add Crop</button>
+        </form>
+
+        <hr class="section-divider">
+
+        <h3>Current Crop List</h3>
+
+        <div th:if="${crops == null || crops.isEmpty()}">
+            <p>No crops have been added yet.</p>
         </div>
-        <div class="form-group">
-            <label for="landSize">Land Size (Hectares):</label>
-            <input type="number" id="landSize" th:field="*{landSize}" step="any" min="0" placeholder="e.g., 1.5">
+
+        <div th:if="${crops != null && !crops.isEmpty()}">
+            <table class="crop-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Field</th>
+                        <th>Land Size (Ha)</th>
+                        <th>Planting Date</th>
+                        <th>Est. Harvest Date</th>
+                        <th>Pesticides</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="crop : ${crops}">
+                        <td th:text="${crop.type}">Wheat</td>
+                        <td th:text="${crop.field != null ? crop.field.name : 'Unassigned'}">North Field</td>
+                        <td th:text="${#numbers.formatDecimal(crop.landSize, 1, 2, 'COMMA')}">5.0</td>
+                        <td
+                            th:text="${crop.plantingDate != null ? #temporals.format(crop.plantingDate, 'yyyy-MM-dd') : 'N/A'}">
+                            2025-03-15</td>
+                        <td
+                            th:text="${crop.harvestDate != null ? #temporals.format(crop.harvestDate, 'yyyy-MM-dd') : 'N/A'}">
+                            2025-08-20</td>
+                        <td th:text="${crop.pesticides}">Roundup</td>
+                        <td><a th:href="@{/crop/{id}(id=${crop.id})}" class="btn-details">View Details</a></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="form-group">
-            <label for="plantingDate">Planting Date:</label>
-            <input type="date" id="plantingDate" th:field="*{plantingDate}">
-        </div>
-        <div class="form-group">
-            <label for="harvestDate">Estimate Harvest Date:</label>
-            <input type="date" id="harvestDate" th:field="*{harvestDate}">
-        </div>
-        <div class="form-group">
-            <label for="pesticides">Pesticides Used:</label>
-            <input type="text" id="pesticides" th:field="*{pesticides}" placeholder="e.g., None, Specific Brand">
-        </div>
 
-        <button type="submit">Add Crop</button>
-    </form>
+    </main>
 
-    <hr class="section-divider">
-
-    <h3>Current Crop List</h3>
-
-    <div th:if="${crops == null || crops.isEmpty()}">
-        <p>No crops have been added yet.</p>
-    </div>
-
-    <div th:if="${crops != null && !crops.isEmpty()}">
-        <table class="crop-table">
-            <thead>
-            <tr>
-                <th>Type</th>
-                <th>Land Size (Ha)</th>
-                <th>Planting Date</th>
-                <th>Est. Harvest Date</th>
-                <th>Pesticides</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="crop : ${crops}">
-                <td th:text="${crop.type}">Wheat</td>
-                <td th:text="${#numbers.formatDecimal(crop.landSize, 1, 2, 'COMMA')}">5.0</td>
-                <td th:text="${crop.plantingDate != null ? #temporals.format(crop.plantingDate, 'yyyy-MM-dd') : 'N/A'}">2025-03-15</td>
-                <td th:text="${crop.harvestDate != null ? #temporals.format(crop.harvestDate, 'yyyy-MM-dd') : 'N/A'}">2025-08-20</td>
-                <td th:text="${crop.pesticides}">Roundup</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-</main>
-
-<footer>
-    <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Dashboard</p>
-</footer>
+    <footer>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Farm Dashboard</p>
+    </footer>
 
 </body>
+
 </html>
