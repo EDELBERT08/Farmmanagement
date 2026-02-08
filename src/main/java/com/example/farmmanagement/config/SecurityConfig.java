@@ -25,21 +25,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
 
-                .headers(headers -> headers
-                        .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src 'self'; " +
-                                        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com; "
-                                        +
-                                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; "
-                                        +
-                                        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
-                                        "connect-src 'self' https://geocoding-api.open-meteo.com; " +
-                                        "img-src 'self' data: https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org;"))
-                        .permissionsPolicy(permissions -> permissions
-                                .policy("geolocation=(self), microphone=(), camera=(), payment=(), usb=()"))
-                        .frameOptions(frame -> frame.deny())
-                        .xssProtection(xss -> xss.headerValue(
-                                org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)))
+                .headers(headers -> {
+                    headers.contentSecurityPolicy(csp -> csp
+                            .policyDirectives("default-src 'self'; " +
+                                    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com; "
+                                    +
+                                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; "
+                                    +
+                                    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+                                    "connect-src 'self' https://geocoding-api.open-meteo.com; " +
+                                    "img-src 'self' data: https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org;"));
+                    headers.permissionsPolicy(permissions -> permissions
+                            .policy("geolocation=(self), microphone=(), camera=(), payment=(), usb=()"));
+                    headers.frameOptions(frame -> frame.deny());
+                    headers.xssProtection(xss -> xss.headerValue(
+                            org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK));
+                })
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error")
                         .permitAll() // Public
