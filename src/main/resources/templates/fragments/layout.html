@@ -116,11 +116,13 @@
                 <span>Task Management</span>
             </a>
 
-            <a href="#"
-                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">
-                <i
-                    class="fa-solid fa-users w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"></i>
-                <span>Labor Management</span>
+            <!-- Labour Management (Admin Only) -->
+            <a th:href="@{/admin/labour}" th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1"
+                th:classappend="${activePage == 'labour'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100' : ''">
+                <i class="fa-solid fa-people-group w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"
+                    th:classappend="${activePage == 'labour'} ? 'text-green-600' : ''"></i>
+                <span>Labour Management</span>
             </a>
 
             <a href="#"
@@ -139,6 +141,8 @@
                     th:classappend="${activePage == 'settings'} ? 'text-green-600' : ''"></i>
                 <span>Settings</span>
             </a>
+
+
 
             <a href="#"
                 class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">

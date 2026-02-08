@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error")
                         .permitAll() // Public
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin-only endpoints
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .formLogin(form -> form
