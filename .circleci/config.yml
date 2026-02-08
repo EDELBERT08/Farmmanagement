@@ -5,7 +5,8 @@ jobs:
     docker:
       - image: cimg/openjdk:17.0
     steps:
-      - checkout
+      - checkout:
+          depth: 0  # Full clone for SonarQube Git analysis
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
