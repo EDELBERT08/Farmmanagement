@@ -5,8 +5,10 @@ jobs:
     docker:
       - image: cimg/openjdk:17.0
     steps:
-      - checkout:
-          depth: 0  # Full clone for SonarQube Git analysis
+      - checkout
+      - run:
+          name: Fetch full Git history for SonarQube
+          command: git fetch --unshallow || true
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
