@@ -9,6 +9,7 @@ import com.example.farmmanagement.service.CropService;
 import com.example.farmmanagement.service.CropTransactionService;
 import com.example.farmmanagement.service.CropActivityService;
 import com.example.farmmanagement.service.FieldService;
+import com.example.farmmanagement.service.SoilWaterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +54,9 @@ public class DashboardControllerTest {
 
     @MockBean
     private CropActivityService activityService;
+
+    @MockBean
+    private SoilWaterService soilWaterService;
 
     @Test
     @WithMockUser(username = "admin", roles = { "ADMIN" })
@@ -142,5 +146,138 @@ public class DashboardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("management-page"))
                 .andExpect(model().attribute("pageTitle", "Produce Management"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void viewCropDetails_WithValidId_ShouldReturnCropDetailsView() throws Exception {
+        Crop crop = new Crop();
+        crop.setId(1L);
+        crop.setType("Wheat");
+
+        given(cropService.getCropById(1L)).willReturn(java.util.Optional.of(crop));
+        given(transactionService.getTransactionsByCropId(1L)).willReturn(Collections.emptyList());
+        given(transactionService.calculateTotalExpenses(1L)).willReturn(50.0);
+        given(transactionService.calculateTotalIncome(1L)).willReturn(150.0);
+        given(activityService.getActivitiesByCropId(1L)).willReturn(Collections.emptyList());
+        given(aiService.getCropInsights(crop)).willReturn("Crop is healthy");
+
+        mockMvc.perform(get("/crop/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("crop-details"))
+                .andExpect(model().attributeExists("crop", "transactions", "totalExpense", "totalIncome", "activities",
+                        "cropInsights"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void viewCropDetails_WithInvalidId_ShouldRedirectToCropPage() throws Exception {
+        given(cropService.getCropById(999L)).willReturn(java.util.Optional.empty());
+
+        mockMvc.perform(get("/crop/999"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/crop"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void addTransaction_ShouldSaveAndRedirectToCropDetails() throws Exception {
+        Crop crop = new Crop();
+        crop.setId(1L);
+        given(cropService.getCropById(1L)).willReturn(java.util.Optional.of(crop));
+
+        mockMvc.perform(post("/crop/1/transaction/add")
+                .param("amount", "100")
+                .param("type", "EXPENSE")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/crop/1"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void addActivity_ShouldSaveAndRedirectToCropDetails() throws Exception {
+        Crop crop = new Crop();
+        crop.setId(1L);
+        given(cropService.getCropById(1L)).willReturn(java.util.Optional.of(crop));
+
+        mockMvc.perform(post("/crop/1/activity/add")
+                .param("description", "Watering")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/crop/1"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void viewFieldDetails_WithValidId_ShouldReturnFieldDetailsView() throws Exception {
+        Field field = new Field();
+        field.setId(1L);
+        field.setName("North Field");
+
+        given(fieldService.getFieldById(1L)).willReturn(java.util.Optional.of(field));
+        given(soilWaterService.getSoilRecordsByField(1L)).willReturn(Collections.emptyList());
+        given(soilWaterService.getWaterRecordsByField(1L)).willReturn(Collections.emptyList());
+        given(soilWaterService.getSoilInputsByField(1L)).willReturn(Collections.emptyList());
+        given(soilWaterService.getFieldSoilWaterSummary(1L)).willReturn(Collections.emptyMap());
+        given(soilWaterService.getSoilPHTrendData(1L)).willReturn(Collections.emptyList());
+        given(soilWaterService.getLatestNutrientLevels(1L)).willReturn(Collections.emptyMap());
+
+        mockMvc.perform(get("/field/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("field-details"))
+                .andExpect(model().attributeExists("field", "soilRecords", "waterRecords", "soilInputs"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void viewFieldDetails_WithInvalidId_ShouldRedirectToFieldPage() throws Exception {
+        given(fieldService.getFieldById(999L)).willReturn(java.util.Optional.empty());
+
+        mockMvc.perform(get("/field/999"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/field"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void addSoilRecord_ShouldSaveAndRedirectToFieldDetails() throws Exception {
+        Field field = new Field();
+        field.setId(1L);
+        given(fieldService.getFieldById(1L)).willReturn(java.util.Optional.of(field));
+
+        mockMvc.perform(post("/field/1/soil-record/add")
+                .param("ph", "6.5")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/field/1"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void addWaterRecord_ShouldSaveAndRedirectToFieldDetails() throws Exception {
+        Field field = new Field();
+        field.setId(1L);
+        given(fieldService.getFieldById(1L)).willReturn(java.util.Optional.of(field));
+
+        mockMvc.perform(post("/field/1/water-record/add")
+                .param("amount", "50")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/field/1"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = { "ADMIN" })
+    public void addSoilInput_ShouldSaveAndRedirectToFieldDetails() throws Exception {
+        Field field = new Field();
+        field.setId(1L);
+        given(fieldService.getFieldById(1L)).willReturn(java.util.Optional.of(field));
+
+        mockMvc.perform(post("/field/1/soil-input/add")
+                .param("type", "Fertilizer")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/field/1"));
     }
 }
