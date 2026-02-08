@@ -251,9 +251,8 @@
 
             <!-- Hidden Data Checks -->
             <!-- Hidden Data Checks -->
-            <div id="crop-data" hidden th:data-harvest-stats="${@objectMapper.writeValueAsString(harvestStats)}"
-                th:data-growth-data="${@objectMapper.writeValueAsString(growthData)}"
-                th:data-field-metrics="${@objectMapper.writeValueAsString(fieldMetrics)}"></div>
+            <div id="crop-data" hidden th:data-harvest-stats="${harvestStatsJson}"
+                th:data-growth-data="${growthDataJson}" th:data-field-metrics="${fieldMetricsJson}"></div>
 
             <script th:src="@{/js/crop-management.js}"></script>
         </div>

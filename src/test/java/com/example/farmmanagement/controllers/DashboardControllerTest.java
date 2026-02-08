@@ -50,6 +50,12 @@ public class DashboardControllerTest {
     private AiService aiService;
 
     @MockBean
+    private com.example.farmmanagement.repository.UserRepository userRepository;
+
+    @org.springframework.boot.test.mock.mockito.SpyBean
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+
+    @MockBean
     private CropTransactionService transactionService;
 
     @MockBean

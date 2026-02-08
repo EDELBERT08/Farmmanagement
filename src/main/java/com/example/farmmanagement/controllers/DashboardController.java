@@ -34,11 +34,13 @@ public class DashboardController {
     private final SoilWaterService soilWaterService;
     private final AiService aiService;
     private final com.example.farmmanagement.repository.UserRepository userRepository;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     public DashboardController(CropService cropService, AnimalService animalService, FieldService fieldService,
             CropTransactionService transactionService, CropActivityService activityService,
             SoilWaterService soilWaterService, AiService aiService,
-            com.example.farmmanagement.repository.UserRepository userRepository) {
+            com.example.farmmanagement.repository.UserRepository userRepository,
+            com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.cropService = cropService;
         this.animalService = animalService;
         this.fieldService = fieldService;
@@ -47,11 +49,13 @@ public class DashboardController {
         this.soilWaterService = soilWaterService;
         this.aiService = aiService;
         this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
     }
 
     // Handles requests to "/home"
     @GetMapping("/home")
     public String showHomePage(Model model, org.springframework.security.core.Authentication authentication) {
+        // ... (existing code) ...
         model.addAttribute("pageTitle", "Home Dashboard");
         model.addAttribute("activePage", "home");
 
@@ -121,6 +125,17 @@ public class DashboardController {
         model.addAttribute("growthData", cropService.getCropGrowthData());
         model.addAttribute("fieldMetrics", fieldService.getFieldMetrics());
 
+        try {
+            model.addAttribute("harvestStatsJson", objectMapper.writeValueAsString(cropService.getHarvestStatistics()));
+            model.addAttribute("growthDataJson", objectMapper.writeValueAsString(cropService.getCropGrowthData()));
+            model.addAttribute("fieldMetricsJson", objectMapper.writeValueAsString(fieldService.getFieldMetrics()));
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            // Handle error or log it, simplistic fallback
+            model.addAttribute("harvestStatsJson", "{}");
+            model.addAttribute("growthDataJson", "[]");
+            model.addAttribute("fieldMetricsJson", "{}");
+        }
+
         // Reuse upcoming tasks and harvests
         model.addAttribute("upcomingHarvests", cropService.getUpcomingHarvests());
         model.addAttribute("upcomingTasks", activityService.getUpcomingTasks());
@@ -138,7 +153,7 @@ public class DashboardController {
     }
 
     @GetMapping("/crop/{id}")
-    public String viewCropDetails(@PathVariable Long id, Model model) {
+    public String viewCropDetails(@PathVariable("id") Long id, Model model) {
         Crop crop = cropService.getCropById(id).orElse(null);
         if (crop == null) {
             return "redirect:/crop";
@@ -160,7 +175,8 @@ public class DashboardController {
     }
 
     @PostMapping("/crop/{id}/transaction/add")
-    public String addTransaction(@PathVariable Long id, @ModelAttribute("newTransaction") CropTransaction transaction) {
+    public String addTransaction(@PathVariable("id") Long id,
+            @ModelAttribute("newTransaction") CropTransaction transaction) {
         Crop crop = cropService.getCropById(id).orElse(null);
         if (crop != null && transaction != null) {
             transaction.setCrop(crop);
@@ -170,7 +186,7 @@ public class DashboardController {
     }
 
     @PostMapping("/crop/{id}/activity/add")
-    public String addActivity(@PathVariable Long id, @ModelAttribute("newActivity") CropActivity activity) {
+    public String addActivity(@PathVariable("id") Long id, @ModelAttribute("newActivity") CropActivity activity) {
         Crop crop = cropService.getCropById(id).orElse(null);
         if (crop != null && activity != null) {
             activity.setCrop(crop);
@@ -242,7 +258,7 @@ public class DashboardController {
 
     // View detailed field information with soil/water records
     @GetMapping("/field/{id}")
-    public String viewFieldDetails(@PathVariable Long id, Model model) {
+    public String viewFieldDetails(@PathVariable("id") Long id, Model model) {
         Field field = fieldService.getFieldById(id).orElse(null);
         if (field == null) {
             return "redirect:/field";
@@ -256,6 +272,16 @@ public class DashboardController {
         model.addAttribute("soilPHTrend", soilWaterService.getSoilPHTrendData(id));
         model.addAttribute("nutrientLevels", soilWaterService.getLatestNutrientLevels(id));
 
+        try {
+            model.addAttribute("soilPHTrendJson",
+                    objectMapper.writeValueAsString(soilWaterService.getSoilPHTrendData(id)));
+            model.addAttribute("nutrientLevelsJson",
+                    objectMapper.writeValueAsString(soilWaterService.getLatestNutrientLevels(id)));
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            model.addAttribute("soilPHTrendJson", "[]");
+            model.addAttribute("nutrientLevelsJson", "{}");
+        }
+
         // Empty objects for forms
         model.addAttribute("newSoilRecord", new SoilRecord());
         model.addAttribute("newWaterRecord", new WaterRecord());
@@ -268,7 +294,7 @@ public class DashboardController {
     }
 
     @PostMapping("/field/{id}/soil-record/add")
-    public String addSoilRecord(@PathVariable Long id, @ModelAttribute("newSoilRecord") SoilRecord soilRecord) {
+    public String addSoilRecord(@PathVariable("id") Long id, @ModelAttribute("newSoilRecord") SoilRecord soilRecord) {
         Field field = fieldService.getFieldById(id).orElse(null);
         if (field != null && soilRecord != null) {
             soilRecord.setField(field);
@@ -278,7 +304,8 @@ public class DashboardController {
     }
 
     @PostMapping("/field/{id}/water-record/add")
-    public String addWaterRecord(@PathVariable Long id, @ModelAttribute("newWaterRecord") WaterRecord waterRecord) {
+    public String addWaterRecord(@PathVariable("id") Long id,
+            @ModelAttribute("newWaterRecord") WaterRecord waterRecord) {
         Field field = fieldService.getFieldById(id).orElse(null);
         if (field != null && waterRecord != null) {
             waterRecord.setField(field);
@@ -288,7 +315,7 @@ public class DashboardController {
     }
 
     @PostMapping("/field/{id}/soil-input/add")
-    public String addSoilInput(@PathVariable Long id, @ModelAttribute("newSoilInput") SoilInput soilInput) {
+    public String addSoilInput(@PathVariable("id") Long id, @ModelAttribute("newSoilInput") SoilInput soilInput) {
         Field field = fieldService.getFieldById(id).orElse(null);
         if (field != null && soilInput != null) {
             soilInput.setField(field);

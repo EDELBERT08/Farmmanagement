@@ -556,8 +556,8 @@
              Let's try that. It's a robust solution.
         -->
         <div id="field-data" hidden th:data-lat="${field.latitude}" th:data-lng="${field.longitude}"
-            th:data-name="${field.name}" th:data-soil-ph-trend="${@objectMapper.writeValueAsString(soilPHTrend)}"
-            th:data-nutrients="${@objectMapper.writeValueAsString(nutrientLevels)}"></div>
+            th:data-name="${field.name}" th:data-soil-ph-trend="${soilPHTrendJson}"
+            th:data-nutrients="${nutrientLevelsJson}"></div>
 
         <script th:src="@{/js/field-details.js}"></script>
     </div>
