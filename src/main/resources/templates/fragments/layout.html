@@ -17,22 +17,7 @@
     <script src="https://cdn.tailwindcss.com/3.4.1"
         integrity="sha384-SOMLQz+nKv/ORIYXo3J3NrWJ33oBgGvkHlV9t8i70QVLq8ZtST9Np1gDsVUkk4xN"
         crossorigin="anonymous"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4CAF50',
-                        'primary-dark': '#388E3C',
-                        secondary: '#FFC107',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <script th:src="@{/js/tailwind-config.js}"></script>
     <style>
         /* Custom scrollbar for sidebar */
         .scrollbar-thin::-webkit-scrollbar {
@@ -59,6 +44,7 @@
     <aside
         class="w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col transition-all duration-300 transform md:translate-x-0 -translate-x-full fixed md:relative z-30 h-full"
         id="sidebar">
+        <!-- Sidebar content remains same -->
         <div class="h-20 flex items-center px-8 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 <div class="bg-green-100 p-2 rounded-lg">
@@ -229,22 +215,7 @@
         </div>
     </main>
 
-    <script>
-        // Simple script to toggle sidebar on mobile
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const toggleBtn = document.getElementById('sidebar-toggle');
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        }
-
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', toggleSidebar);
-            overlay.addEventListener('click', toggleSidebar);
-        }
-    </script>
+    <script th:src="@{/js/common.js}"></script>
 
 </body>
 

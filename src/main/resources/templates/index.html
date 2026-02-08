@@ -70,142 +70,7 @@
                 </div>
             </div>
 
-            <script th:inline="javascript">
-                document.addEventListener('DOMContentLoaded', () => {
-                    // Time-based greeting
-                    const now = new Date();
-                    const hour = now.getHours();
-                    let greeting = "Good day";
-                    let icon = "fa-sun";
-
-                    if (hour >= 5 && hour < 12) {
-                        greeting = "Good morning";
-                        icon = "fa-cloud-sun";
-                    } else if (hour >= 12 && hour < 17) {
-                        greeting = "Good afternoon";
-                        icon = "fa-sun";
-                    } else if (hour >= 17 && hour < 21) {
-                        greeting = "Good evening";
-                        icon = "fa-moon";
-                    } else {
-                        greeting = "Good night";
-                        icon = "fa-moon";
-                    }
-
-                    document.getElementById('greetingText').textContent = greeting;
-                    document.getElementById('greetingIcon').className = `fa-solid ${icon}`;
-
-                    // Get current time display
-                    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    document.getElementById('greetingSubtext').textContent = `It's ${timeStr} - Welcome back to your farm dashboard`;
-
-                    const userLocation = /*[[${userLocation}]]*/ null;
-
-                    if (userLocation) {
-                        const userLat = /*[[${userLocation?.latitude}]]*/ 0;
-                        const userLon = /*[[${userLocation?.longitude}]]*/ 0;
-                        const userCity = /*[[${userLocation?.city}]]*/ "My Farm";
-
-                        console.log('✅ Using saved location:', userCity, `(${userLat}, ${userLon})`);
-                        document.getElementById('dashLocation').textContent = userCity;
-                        dashLoadWeather(userLat, userLon);
-                    }
-                    else if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(dashSuccess, dashError);
-                    } else {
-                        dashFallback();
-                    }
-
-                    function dashSuccess(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        console.log('📍 Using browser geolocation:', `(${lat.toFixed(2)}, ${lon.toFixed(2)})`);
-                        document.getElementById('dashLocation').textContent = lat.toFixed(2) + ", " + lon.toFixed(2);
-                        dashLoadWeather(lat, lon);
-                    }
-
-                    function dashError() {
-                        console.warn('⚠️ Geolocation failed, using fallback location');
-                        dashFallback();
-                    }
-
-                    function dashFallback() {
-                        console.log('🔄 Using default location: Nairobi');
-                        document.getElementById('dashLocation').textContent = "Nairobi (Default)";
-                        dashLoadWeather(-1.2921, 36.8219);
-                    }
-
-                    function dashLoadWeather(lat, lon) {
-                        fetch(`/api/weather?lat=${lat}&lon=${lon}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                document.getElementById('dashTemp').textContent = Math.round(data.temp);
-                                document.getElementById('dashHumidity').textContent = data.humidity;
-                                document.getElementById('dashWind').textContent = data.windSpeed;
-                                document.getElementById('dashUV').textContent = data.uvIndex;
-
-                                const code = data.weatherCode;
-                                console.log('🌤️ Weather code:', code);
-                                let desc = "Clear Sky";
-                                let iconClass = "fa-sun";
-
-                                // WMO Weather interpretation codes (Open-Meteo standard)
-                                if (code === 0) {
-                                    desc = "Clear Sky";
-                                    iconClass = "fa-sun";
-                                }
-                                else if (code >= 1 && code <= 3) {
-                                    desc = code === 1 ? "Mainly Clear" : (code === 2 ? "Partly Cloudy" : "Overcast");
-                                    iconClass = "fa-cloud-sun";
-                                }
-                                else if (code >= 45 && code <= 48) {
-                                    desc = "Foggy";
-                                    iconClass = "fa-smog";
-                                }
-                                else if (code >= 51 && code <= 55) {
-                                    desc = "Drizzle";
-                                    iconClass = "fa-cloud-rain";
-                                }
-                                else if (code >= 56 && code <= 57) {
-                                    desc = "Freezing Drizzle";
-                                    iconClass = "fa-snowflake";
-                                }
-                                else if (code >= 61 && code <= 65) {
-                                    desc = code === 61 ? "Light Rain" : (code === 63 ? "Moderate Rain" : "Heavy Rain");
-                                    iconClass = "fa-cloud-rain";
-                                }
-                                else if (code >= 66 && code <= 67) {
-                                    desc = "Freezing Rain";
-                                    iconClass = "fa-snowflake";
-                                }
-                                else if (code >= 71 && code <= 75) {
-                                    desc = "Snow";
-                                    iconClass = "fa-snowflake";
-                                }
-                                else if (code === 77) {
-                                    desc = "Snow Grains";
-                                    iconClass = "fa-snowflake";
-                                }
-                                else if (code >= 80 && code <= 82) {
-                                    desc = "Rain Showers";
-                                    iconClass = "fa-cloud-showers-heavy";
-                                }
-                                else if (code >= 85 && code <= 86) {
-                                    desc = "Snow Showers";
-                                    iconClass = "fa-snowflake";
-                                }
-                                else if (code >= 95 && code <= 99) {
-                                    desc = "Thunderstorm";
-                                    iconClass = "fa-cloud-bolt";
-                                }
-
-                                document.getElementById('dashCondition').textContent = desc;
-                                document.getElementById('dashIcon').className = `fa-solid ${iconClass} text-6xl text-yellow-400`;
-                            })
-                            .catch(err => console.error('Dashboard weather error:', err));
-                    }
-                });
-            </script>
+            <!-- Script removed; logic moved to dashboard.js -->
 
             <!-- Stats Container -->
             <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -378,88 +243,16 @@
 
         </div>
 
-        <script th:inline="javascript">
-            // Chart Data from Backend
-            const cropData = /*[[${cropDistribution}]]*/ {};
+        <!-- Data Containers -->
+        <div id="location-data" hidden th:if="${userLocation != null}" th:data-lat="${userLocation.latitude}"
+            th:data-lon="${userLocation.longitude}" th:data-city="${userLocation.city}"></div>
 
-            const ctx = document.getElementById('productionChart').getContext('2d');
+        <div id="crop-data" hidden>
+            <div th:each="entry : ${cropDistribution}" class="crop-data-item" th:data-label="${entry.key}"
+                th:data-value="${entry.value}"></div>
+        </div>
 
-            const labels = Object.keys(cropData);
-            const data = Object.values(cropData);
-
-            // Colors generator
-            const bgColors = [
-                'rgba(76, 175, 80, 0.8)',
-                'rgba(255, 193, 7, 0.8)',
-                'rgba(33, 150, 243, 0.8)',
-                'rgba(156, 39, 176, 0.8)',
-                'rgba(244, 67, 54, 0.8)'
-            ];
-
-            new Chart(ctx, {
-                type: 'bar', // Can be 'doughnut' or 'bar'
-                data: {
-                    labels: labels.length > 0 ? labels : ['No Crops'],
-                    datasets: [{
-                        label: 'Crop Count by Type',
-                        data: data.length > 0 ? data : [0],
-                        backgroundColor: bgColors,
-                        borderRadius: 6,
-                        borderSkipped: false,
-                        barThickness: 40,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            padding: 12,
-                            cornerRadius: 8,
-                            titleFont: {
-                                size: 14,
-                                family: 'Inter'
-                            },
-                            bodyFont: {
-                                size: 13,
-                                family: 'Inter'
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#f3f4f6',
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'Inter'
-                                },
-                                color: '#6b7280'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'Inter'
-                                },
-                                color: '#6b7280'
-                            }
-                        }
-                    }
-                }
-            });
-        </script>
+        <script th:src="@{/js/dashboard.js}"></script>
     </div>
 
 </body>

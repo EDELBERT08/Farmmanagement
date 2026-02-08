@@ -250,95 +250,12 @@
             </div>
 
             <!-- Hidden Data Checks -->
-            <script th:inline="javascript">
-                // Chart Data Injection
-                const harvestStats = /*[[${harvestStats}]]*/ {};
-                const growthData = /*[[${growthData}]]*/[];
+            <!-- Hidden Data Checks -->
+            <div id="crop-data" hidden th:data-harvest-stats="${@objectMapper.writeValueAsString(harvestStats)}"
+                th:data-growth-data="${@objectMapper.writeValueAsString(growthData)}"
+                th:data-field-metrics="${@objectMapper.writeValueAsString(fieldMetrics)}"></div>
 
-                // --- Harvest Summary Chart ---
-                const harvestCtx = document.getElementById('harvestSummaryChart').getContext('2d');
-                new Chart(harvestCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Wasted', 'Planted', 'Collected'],
-                        datasets: [{
-                            data: [harvestStats.Wasted || 30, harvestStats.Planted || 200, harvestStats.Collected || 170],
-                            backgroundColor: ['#3b82f6', '#22c55e', '#fbbf24'], // Blue, Green, Yellow
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        cutout: '65%',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: { usePointStyle: true, font: { family: 'Inter', size: 12 } }
-                            }
-                        }
-                    }
-                });
-
-                // --- Growth Chart ---
-                const growthCtx = document.getElementById('growthChart').getContext('2d');
-                new Chart(growthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['1day', '2day', '5day', '6day', '7day', '8day', '9day', '10day'],
-                        datasets: [{
-                            label: 'Height (cm)',
-                            data: growthData.length > 0 ? growthData : [1, 2, 2.5, 3, 3.5, 4, 4.5, 5],
-                            borderColor: '#22c55e',
-                            backgroundColor: (context) => {
-                                const ctx = context.chart.ctx;
-                                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                                gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
-                                gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
-                                return gradient;
-                            },
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#22c55e',
-                            pointRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
-                            x: { grid: { display: false } }
-                        },
-                        plugins: { legend: { display: false } }
-                    }
-                });
-
-                // --- Field Metrics Chart (Gauge/Doughnut) ---
-                const fieldCtx = document.getElementById('fieldMetricsChart').getContext('2d');
-                new Chart(fieldCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Water', 'PH', 'Temp'],
-                        datasets: [{
-                            data: [60, 25, 15], // Mock proportions
-                            backgroundColor: ['#3b82f6', '#22c55e', '#e5e7eb'],
-                            circumference: 180,
-                            rotation: 270,
-                            borderWidth: 0,
-                            borderRadius: 10
-                        }]
-                    },
-                    options: {
-                        cutout: '80%',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, tooltip: { enabled: false } }
-                    }
-                });
-            </script>
+            <script th:src="@{/js/crop-management.js}"></script>
         </div>
     </div>
 </body>

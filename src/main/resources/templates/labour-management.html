@@ -327,20 +327,7 @@
             </div>
         </div>
 
-        <script>
-            function openEditModal(id, username, role) {
-                document.getElementById('editUserId').value = id;
-                document.getElementById('editUsername').value = username;
-                document.getElementById('editRole').value = role;
-                document.getElementById('editEmployeeForm').action = '/admin/labour/' + id + '/edit';
-                document.getElementById('editEmployeeModal').classList.remove('hidden');
-            }
-
-            function closeEditModal() {
-                document.getElementById('editEmployeeModal').classList.add('hidden');
-                document.getElementById('editPassword').value = ''; // Clear password field
-            }
-        </script>
+        <script th:src="@{/js/labour-management.js}"></script>
     </div>
 </body>
 

@@ -4,12 +4,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class WeatherService {
+
+    private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
     // OpenWeatherMap API - more accurate than Open-Meteo
     // Get free API key from: https://home.openweathermap.org/api_keys
@@ -43,7 +47,7 @@ public class WeatherService {
             return processOpenWeatherData(body);
 
         } catch (Exception e) {
-            System.err.println("❌ Weather API Error: " + e.getMessage());
+            logger.error("Weather API Error: {}", e.getMessage());
             return getMockWeather();
         }
     }

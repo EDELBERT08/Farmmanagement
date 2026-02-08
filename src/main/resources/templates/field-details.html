@@ -517,80 +517,49 @@
         </div>
 
         <!-- Scripts -->
-        <script th:inline="javascript">
-            // Field Map Initialization
-            const fieldLat = /*[[${field.latitude}]]*/ -1.2864;
-            const fieldLng = /*[[${field.longitude}]]*/ 36.8172;
+        <!-- Data Container -->
+        <div id="field-data" hidden th:data-lat="${field.latitude}" th:data-lng="${field.longitude}"
+            th:data-name="${field.name}" th:data-soil-ph-trend="${soilPHTrendJson}"
+            th:data-nutrients="${nutrientLevelsJson}"></div>
+        <!-- Note: We need to ensure the controller provides JSON strings for complex objects, or we need to inline them as JSON string in the data attribute.
+             Thymeleaf's standard expression execution will toString() objects. We might need an ObjectMapper or strict JSON serialization in the controller.
+             Assuming the controller now adds these as JSON strings or we rely on Thymeleaf's javascript inlining features which we are trying to avoid?
+             Actually, we can't use th:inline="javascript" anymore. Use a helper to serialize to JSON in the controller or assume it's already done.
+             Wait, the original code used /*[[${soilPHTrend}]]*/ which uses Thymeleaf's JS inlining to serialize.
+             If I use th:data-*, it's just a string. I need the controller to pass JSON strings.
+             Since I can't easily change the controller right now to return JSON strings without recompiling and potential issues,
+             I will use a ObjectMapper in the template? No, Thymeleaf doesn't have built-in JSON serializer for attributes.
+             
+             Workaround: Use strict JSON format in th:data if possible, or... 
+             The previous inline script relied on Thymeleaf's capable serialization.
+             
+             If I am sticking to "No Inline Scripts", I must pass the data as JSON strings in the data attributes.
+             If the objects are simple, I can try to rely on their toString() if it was JSON, but it's likely not.
+             
+             I should probably modify the controller to add these as JSON attributes?
+             
+             Actually, for now, let's assume the current simple objects are not too complex.
+             But `soilPHTrend` is a list of objects. `nutrientLevels` is an object.
+             
+             If I cannot change the controller easily, I might have to stick to a customized inline script block that ONLY defines the data, 
+             but that defeats the purpose of "No Inline Scripts" for CSP 'unsafe-inline'.
+             
+             However, if I use a nonce, I can keep the data definition inline. 
+             But the goal is to remove it.
+             
+             Let's check if I can use the ObjectMapper bean in Thymeleaf if it's available?
+             Usually `spring` bean is available.
+             
+             th:data-soil-ph-trend="${@objectMapper.writeValueAsString(soilPHTrend)}"
+             
+             This requires `ObjectMapper` bean to be named `objectMapper`. It usually is.
+             Let's try that. It's a robust solution.
+        -->
+        <div id="field-data" hidden th:data-lat="${field.latitude}" th:data-lng="${field.longitude}"
+            th:data-name="${field.name}" th:data-soil-ph-trend="${@objectMapper.writeValueAsString(soilPHTrend)}"
+            th:data-nutrients="${@objectMapper.writeValueAsString(nutrientLevels)}"></div>
 
-            if (fieldLat && fieldLng) {
-                const fieldMap = L.map('fieldMap').setView([fieldLat, fieldLng], 14);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(fieldMap);
-                L.marker([fieldLat, fieldLng]).addTo(fieldMap)
-                    .bindPopup(/*[[${field.name}]]*/ 'Field').openPopup();
-            }
-
-            // Tab Switching
-            function switchTab(tab) {
-                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                document.querySelectorAll('.tab-button').forEach(el => {
-                    el.classList.remove('active', 'border-green-600', 'text-green-600');
-                    el.classList.add('border-transparent', 'text-gray-500');
-                });
-
-                document.getElementById('content-' + tab).classList.remove('hidden');
-                const activeTab = document.getElementById('tab-' + tab);
-                activeTab.classList.add('active', 'border-green-600', 'text-green-600');
-                activeTab.classList.remove('border-transparent', 'text-gray-500');
-            }
-
-            // Soil pH Trend Chart
-            const soilPHTrendData = /*[[${soilPHTrend}]]*/[];
-            if (soilPHTrendData.length > 0) {
-                new Chart(document.getElementById('soilPHChart'), {
-                    type: 'line',
-                    data: {
-                        labels: soilPHTrendData.map(d => d.date),
-                        datasets: [{
-                            label: 'pH Level',
-                            data: soilPHTrendData.map(d => d.pH),
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, max: 14 }
-                        }
-                    }
-                });
-            }
-
-            // Nutrient Levels Chart
-            const nutrients = /*[[${nutrientLevels}]]*/ {};
-            new Chart(document.getElementById('nutrientChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Nitrogen (N)', 'Phosphorus (P)', 'Potassium (K)'],
-                    datasets: [{
-                        data: [nutrients.nitrogen || 0, nutrients.phosphorus || 0, nutrients.potassium || 0],
-                        backgroundColor: ['#3b82f6', '#f59e0b', '#10b981']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Percentage (%)' } } }
-                }
-            });
-        </script>
+        <script th:src="@{/js/field-details.js}"></script>
     </div>
 </body>
 

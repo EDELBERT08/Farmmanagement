@@ -46,9 +46,9 @@ class LabourManagementControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void addEmployee() throws Exception {
+    void addEmployee_Success() throws Exception {
         when(userRepository.findByUsername("newemp")).thenReturn(Optional.empty());
-        
+
         mockMvc.perform(post("/admin/labour/add")
                         .with(csrf())
                         .param("username", "newemp")
@@ -56,7 +56,98 @@ class LabourManagementControllerTest {
                         .param("role", "EMPLOYEE"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/labour"))
-                .andExpect(flash().attributeExists("success"));
+                .andExpect(flash().attribute("success", "Employee added successfully!"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void addEmployee_UsernameExists() throws Exception {
+        User existing = new User();
+        existing.setUsername("existing");
+        when(userRepository.findByUsername("existing")).thenReturn(Optional.of(existing));
+
+        mockMvc.perform(post("/admin/labour/add")
+                .with(csrf())
+                .param("username", "existing")
+                .param("password", "pass")
+                .param("role", "EMPLOYEE"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/labour"))
+                .andExpect(flash().attribute("error", "Username already exists!"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void editEmployee_Success() throws Exception {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("oldname");
+        user.setRole(Role.EMPLOYEE);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        // Simulate no conflict for new name
+        when(userRepository.findByUsername("newname")).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/admin/labour/1/edit")
+                .with(csrf())
+                .param("username", "newname")
+                .param("password", "newpass")
+                .param("role", "ADMIN")) // Use valid role
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/labour"))
+                .andExpect(flash().attribute("success", "Employee updated successfully!"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteEmployee_Success() throws Exception {
+        User user = new User();
+        user.setId(2L);
+        user.setUsername("todelete");
+        user.setRole(Role.EMPLOYEE);
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+
+        mockMvc.perform(post("/admin/labour/2/delete")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/labour"))
+                .andExpect(flash().attribute("success", "Employee deleted successfully!"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteEmployee_LastAdmin_Failure() throws Exception {
+        User admin = new User();
+        admin.setId(1L);
+        admin.setUsername("admin");
+        admin.setRole(Role.ADMIN);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
+        when(userRepository.findAll()).thenReturn(Collections.singletonList(admin)); // Only 1 admin
+
+        mockMvc.perform(post("/admin/labour/1/delete")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/labour"))
+                .andExpect(flash().attribute("error", "Cannot delete the last admin user!"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void changeRole_Success() throws Exception {
+        User user = new User();
+        user.setId(3L);
+        user.setRole(Role.EMPLOYEE);
+
+        when(userRepository.findById(3L)).thenReturn(Optional.of(user));
+
+        mockMvc.perform(post("/admin/labour/3/change-role")
+                .with(csrf())
+                .param("role", "ADMIN")) // Use valid role
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/labour"))
+                .andExpect(flash().attribute("success", "Employee role updated successfully!"));
     }
 
     @Test
