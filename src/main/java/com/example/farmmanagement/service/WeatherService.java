@@ -38,11 +38,12 @@ public class WeatherService {
                 return getMockWeather();
             }
 
-            return processOpenWeatherData(currentResponse.getBody());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> body = (Map<String, Object>) currentResponse.getBody();
+            return processOpenWeatherData(body);
 
         } catch (Exception e) {
             System.err.println("❌ Weather API Error: " + e.getMessage());
-            e.printStackTrace();
             return getMockWeather();
         }
     }
