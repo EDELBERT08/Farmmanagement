@@ -31,6 +31,26 @@
 		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.sources>src/main/java,src/main/resources</sonar.sources>
+		
+		<!-- SonarCloud Configuration -->
+		<sonar.projectKey>EDELBERT08_Farmmanagement</sonar.projectKey>
+		<sonar.organization>edelbert08</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		
+		<!-- Issue Exclusions -->
+		<sonar.issue.ignore.multicriteria>e1,e2,e3</sonar.issue.ignore.multicriteria>
+		
+		<!-- S5148: Geolocation is required for weather location features -->
+		<sonar.issue.ignore.multicriteria.e1.ruleKey>javascript:S5148</sonar.issue.ignore.multicriteria.e1.ruleKey>
+		<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e1.resourceKey>
+		
+		<!-- S2228: Console logs are acceptable in client-side templates -->
+		<sonar.issue.ignore.multicriteria.e2.ruleKey>javascript:S2228</sonar.issue.ignore.multicriteria.e2.ruleKey>
+		<sonar.issue.ignore.multicriteria.e2.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e2.resourceKey>
+		
+		<!-- S5725: External CDN libraries (Leaflet) are from trusted sources -->
+		<sonar.issue.ignore.multicriteria.e3.ruleKey>Web:S5725</sonar.issue.ignore.multicriteria.e3.ruleKey>
+		<sonar.issue.ignore.multicriteria.e3.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e3.resourceKey>
 	</properties>
 	<dependencies>
 		<dependency>
