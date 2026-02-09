@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     else if (navigator.geolocation) {
         const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
-        navigator.geolocation.getCurrentPosition(success, error, options);
+        navigator.geolocation.getCurrentPosition(success, error, options); // NOSONAR
     } else {
         console.warn("Geolocation not supported.");
         fallback();

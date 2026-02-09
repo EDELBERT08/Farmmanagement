@@ -41,11 +41,7 @@
 		<sonar.scm.disabled>true</sonar.scm.disabled>
 		
 		<!-- Issue Exclusions -->
-		<sonar.issue.ignore.multicriteria>e1,e2,e3</sonar.issue.ignore.multicriteria>
-		
-		<!-- S5148: Geolocation is required for weather location features -->
-		<sonar.issue.ignore.multicriteria.e1.ruleKey>javascript:S5148</sonar.issue.ignore.multicriteria.e1.ruleKey>
-		<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e1.resourceKey>
+		<sonar.issue.ignore.multicriteria>e2,e3</sonar.issue.ignore.multicriteria>
 		
 		<!-- S2228: Console logs are acceptable in client-side templates -->
 		<sonar.issue.ignore.multicriteria.e2.ruleKey>javascript:S2228</sonar.issue.ignore.multicriteria.e2.ruleKey>

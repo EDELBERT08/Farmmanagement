@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dashLoadWeather(userLat, userLon);
     }
     else if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(dashSuccess, dashError);
+        navigator.geolocation.getCurrentPosition(dashSuccess, dashError); // NOSONAR
     } else {
         dashFallback();
     }

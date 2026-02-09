@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(
+        navigator.geolocation.getCurrentPosition( // NOSONAR
             (position) => {
                 const latInput = document.getElementById('latInput');
                 const lonInput = document.getElementById('lonInput');
