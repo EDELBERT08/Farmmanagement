@@ -260,4 +260,98 @@ class SoilWaterServiceTest {
         Map<String, Double> nutrients = soilWaterService.getLatestNutrientLevels(1L);
         assertEquals(0.0, nutrients.get("nitrogen"));
     }
+
+    @Test
+    void getAverageSoilPH_IgnoredNulls() {
+        SoilRecord r1 = new SoilRecord();
+        r1.setPH(6.0);
+        SoilRecord r2 = new SoilRecord();
+        r2.setPH(null); // Should be ignored
+        when(soilRecordRepository.findByFieldId(1L)).thenReturn(Arrays.asList(r1, r2));
+
+        Double avg = soilWaterService.getAverageSoilPH(1L);
+        assertEquals(6.0, avg);
+    }
+
+    @Test
+    void getAverageWaterPH_IgnoredNulls() {
+        WaterRecord r1 = new WaterRecord();
+        r1.setPH(8.0);
+        WaterRecord r2 = new WaterRecord();
+        r2.setPH(null); // Should be ignored
+        when(waterRecordRepository.findByFieldId(1L)).thenReturn(Arrays.asList(r1, r2));
+
+        Double avg = soilWaterService.getAverageWaterPH(1L);
+        assertEquals(8.0, avg);
+    }
+
+    @Test
+    void calculateAverageSoilPH_IgnoredNulls() {
+        SoilRecord r1 = new SoilRecord();
+        r1.setPH(5.0);
+        SoilRecord r2 = new SoilRecord();
+        r2.setPH(null); // Should be ignored
+        when(soilRecordRepository.findAll()).thenReturn(Arrays.asList(r1, r2));
+
+        Double avg = soilWaterService.calculateAverageSoilPH();
+        assertEquals(5.0, avg);
+    }
+
+    @Test
+    void getFieldSoilWaterSummary_EmptyLists() {
+        when(soilRecordRepository.findByFieldIdOrderByTestDateDesc(1L)).thenReturn(Collections.emptyList());
+        when(waterRecordRepository.findByFieldIdOrderByTestDateDesc(1L)).thenReturn(Collections.emptyList());
+        when(soilInputRepository.findByFieldIdOrderByApplicationDateDesc(1L)).thenReturn(Collections.emptyList());
+        
+        // Mock sub-calls for averages/costs to avoid NPE if implementation changes or defaults
+        when(soilRecordRepository.findByFieldId(1L)).thenReturn(Collections.emptyList());
+        when(waterRecordRepository.findByFieldId(1L)).thenReturn(Collections.emptyList());
+        when(soilInputRepository.calculateTotalCostByField(1L)).thenReturn(null);
+
+        Map<String, Object> summary = soilWaterService.getFieldSoilWaterSummary(1L);
+        
+        assertEquals(0, summary.get("totalSoilTests"));
+        assertNull(summary.get("latestSoilRecord"));
+        assertEquals(0, summary.get("totalWaterTests"));
+        assertNull(summary.get("latestWaterRecord"));
+        assertEquals(0, summary.get("totalInputs"));
+    }
+
+    @Test
+    void getSoilPHTrendData_FiltersNulls() {
+        SoilRecord r1 = new SoilRecord();
+        r1.setTestDate(LocalDate.now());
+        r1.setPH(6.0);
+
+        SoilRecord r2 = new SoilRecord();
+        r2.setTestDate(null); // Should filter out
+        r2.setPH(7.0);
+
+        SoilRecord r3 = new SoilRecord();
+        r3.setTestDate(LocalDate.now());
+        r3.setPH(null); // Should filter out
+
+        when(soilRecordRepository.findByFieldIdOrderByTestDateDesc(1L)).thenReturn(Arrays.asList(r1, r2, r3));
+
+        List<Map<String, Object>> trend = soilWaterService.getSoilPHTrendData(1L);
+
+        assertEquals(1, trend.size());
+        assertEquals(6.0, trend.get(0).get("pH"));
+    }
+
+    @Test
+    void getLatestNutrientLevels_NullValuesDefaultToZero() {
+        SoilRecord r1 = new SoilRecord();
+        r1.setNitrogen(null);
+        r1.setPhosphorus(null);
+        r1.setPotassium(null);
+
+        when(soilRecordRepository.findByFieldIdOrderByTestDateDesc(1L)).thenReturn(Collections.singletonList(r1));
+
+        Map<String, Double> nutrients = soilWaterService.getLatestNutrientLevels(1L);
+
+        assertEquals(0.0, nutrients.get("nitrogen"));
+        assertEquals(0.0, nutrients.get("phosphorus"));
+        assertEquals(0.0, nutrients.get("potassium"));
+    }
 }

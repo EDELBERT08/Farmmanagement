@@ -7,9 +7,7 @@
     <title>Login - FarmVista</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"
         crossorigin="anonymous">
-    <script src="https://cdn.tailwindcss.com/3.4.1"
-        integrity="sha384-SOMLQz+nKv/ORIYXo3J3NrWJ33oBgGvkHlV9t8i70QVLq8ZtST9Np1gDsVUkk4xN"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
     <script th:src="@{/js/tailwind-config.js}"></script>
 </head>
 
@@ -40,7 +38,6 @@
         </div>
 
         <form th:action="@{/login}" method="post" class="space-y-6">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div>
                 <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                 <input type="text" id="username" name="username" required autofocus

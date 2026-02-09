@@ -28,9 +28,9 @@ public class SecurityConfig {
                 .headers(headers -> {
                     headers.contentSecurityPolicy(csp -> csp
                             .policyDirectives("default-src 'self'; " +
-                                    "script-src 'self' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com; "
+                                    "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com; "
                                     +
-                                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; "
+                                    "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; "
                                     +
                                     "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
                                     "connect-src 'self' https://geocoding-api.open-meteo.com; " +
