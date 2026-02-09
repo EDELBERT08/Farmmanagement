@@ -37,6 +37,9 @@
 		<sonar.organization>edelbert08</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		
+		<!-- Disable SCM (Git blame) to avoid missing blob errors in CircleCI -->
+		<sonar.scm.disabled>true</sonar.scm.disabled>
+		
 		<!-- Issue Exclusions -->
 		<sonar.issue.ignore.multicriteria>e1,e2,e3</sonar.issue.ignore.multicriteria>
 		
