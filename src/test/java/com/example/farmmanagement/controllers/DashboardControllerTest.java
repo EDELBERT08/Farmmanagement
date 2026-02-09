@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,9 +50,6 @@ public class DashboardControllerTest {
 
     @MockBean
     private com.example.farmmanagement.repository.UserRepository userRepository;
-
-    @org.springframework.boot.test.mock.mockito.SpyBean
-    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     @MockBean
     private CropTransactionService transactionService;

@@ -59,4 +59,25 @@ class WeatherControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.temp").value(25.0));
     }
+
+    @Test
+    void showWeatherPageUnauthenticated() throws Exception {
+        mockMvc.perform(get("/weather"))
+                .andExpect(status().is3xxRedirection()) // Spring Security redirects to login
+                .andExpect(redirectedUrl("http://localhost/login"));
+    }
+
+    @Test
+    @WithMockUser(username = "userNoLoc")
+    void showWeatherPageNoLocation() throws Exception {
+        User user = new User();
+        user.setUsername("userNoLoc");
+        // Lat/Lon are null by default
+        when(userRepository.findByUsername("userNoLoc")).thenReturn(Optional.of(user));
+
+        mockMvc.perform(get("/weather"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("weather"))
+                .andExpect(model().attributeDoesNotExist("userLocation"));
+    }
 }

@@ -2,6 +2,7 @@ package com.example.farmmanagement.controllers;
 
 import com.example.farmmanagement.model.User;
 import com.example.farmmanagement.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,6 +28,9 @@ class SettingsControllerTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private PasswordEncoder passwordEncoder;
 
     @Test
     @WithMockUser(username = "admin")
@@ -56,6 +60,39 @@ class SettingsControllerTest {
                 .param("longitude", "36.8219"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/settings"))
+
                 .andExpect(flash().attributeExists("success"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin")
+    void updatePassword() throws Exception {
+        User user = new User();
+        user.setUsername("admin");
+        user.setPassword("oldPass");
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(any())).thenReturn("encodedPass");
+
+        mockMvc.perform(post("/settings/password")
+                .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+                .param("newPassword", "newPass"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings"))
+                .andExpect(flash().attributeExists("success"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin")
+    void updatePasswordEmpty() throws Exception {
+        User user = new User();
+        user.setUsername("admin");
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+
+        mockMvc.perform(post("/settings/password")
+                .with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf())
+                .param("newPassword", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings"))
+                .andExpect(flash().attributeExists("error"));
     }
 }
