@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Field Details</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="p-8">
+            <!-- Back Navigation + Header -->
+            <div class="mb-6">
+                <a th:href="@{/field}"
+                    class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold mb-4">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to all sections
+                </a>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                    <i class="fa-solid fa-map-location-dot text-green-600"></i>
+                    <span th:text="${field.name}">Field Name</span>
+                </h1>
+                <p class="text-gray-600 mt-2" th:text="${field.location}">Location description</p>
+            </div>
+
+            <!-- Overview Section -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <!-- Area Size -->
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fa-solid fa-chart-area text-2xl opacity-80"></i>
+                        <p class="text-blue-100 text-sm font-medium">Area Size</p>
+                    </div>
+                    <h3 class="text-3xl font-bold" th:text="${field.areaSize} + ' acres'">5.5 acres</h3>
+                </div>
+
+                <!-- Soil Tests -->
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fa-solid fa-vial text-2xl opacity-80"></i>
+                        <p class="text-green-100 text-sm font-medium">Soil Tests</p>
+                    </div>
+                    <h3 class="text-3xl font-bold" th:text="${summary != null ? summary['totalSoilTests'] : 0}">0</h3>
+                </div>
+
+                <!-- Water Tests -->
+                <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fa-solid fa-droplet text-2xl opacity-80"></i>
+                        <p class="text-cyan-100 text-sm font-medium">Water Tests</p>
+                    </div>
+                    <h3 class="text-3xl font-bold" th:text="${summary != null ? summary['totalWaterTests'] : 0}">0</h3>
+                </div>
+
+                <!-- Total Inputs -->
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fa-solid fa-seedling text-2xl opacity-80"></i>
+                        <p class="text-purple-100 text-sm font-medium">Total Inputs</p>
+                    </div>
+                    <h3 class="text-3xl font-bold" th:text="${summary != null ? summary['totalInputs'] : 0}">0</h3>
+                    <p class="text-xs text-purple-100 mt-1"
+                        th:text="'$' + ${summary != null ? summary['totalInputCost'] : 0} + ' spent'">$0 spent</p>
+                </div>
+            </div>
+
+            <!-- Map + Current Crops -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Field Location Map -->
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800">Field Location</h3>
+                    </div>
+                    <div id="fieldMap" class="h-80 w-full"></div>
+                </div>
+
+                <!-- Allocated Crops -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Allocated Crops</h3>
+                    <div th:if="${field.crops == null || field.crops.isEmpty()}" class="text-center py-8">
+                        <i class="fa-solid fa-seedling text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 text-sm">No crops allocated yet</p>
+                    </div>
+                    <div th:if="${field.crops != null && !field.crops.isEmpty()}" class="space-y-3">
+                        <div th:each="crop : ${field.crops}"
+                            class="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                            <p class="font-bold text-gray-800" th:text="${crop.type}">Corn</p>
+                            <p class="text-xs text-gray-600 mt-1" th:text="${crop.landSize} + ' acres'">2.5 acres</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="border-b border-gray-200">
+                    <nav class="flex" aria-label="Tabs">
+                        <button onclick="switchTab('soil')" id="tab-soil"
+                            class="tab-button active px-6 py-4 text-sm font-semibold border-b-2 border-green-600 text-green-600">
+                            <i class="fa-solid fa-flask mr-2"></i>Soil Records
+                        </button>
+                        <button onclick="switchTab('water')" id="tab-water"
+                            class="tab-button px-6 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+                            <i class="fa-solid fa-droplet mr-2"></i>Water Records
+                        </button>
+                        <button onclick="switchTab('inputs')" id="tab-inputs"
+                            class="tab-button px-6 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+                            <i class="fa-solid fa-layer-group mr-2"></i>Soil Inputs
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Soil Records Tab -->
+                <div id="content-soil" class="tab-content p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-800">Soil Composition History</h3>
+                        <button onclick="document.getElementById('soilModal').classList.remove('hidden')"
+                            class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition">
+                            <i class="fa-solid fa-plus mr-2"></i>Add Soil Test
+                        </button>
+                    </div>
+
+                    <!-- Soil pH Trend Chart -->
+                    <div class="mb-8 bg-gray-50 p-6 rounded-xl">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Soil pH Trend</h4>
+                        <canvas id="soilPHChart" class="h-64"></canvas>
+                    </div>
+
+                    <!-- Nutrient Levels -->
+                    <div class="mb-8 bg-gray-50 p-6 rounded-xl">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Latest Nutrient Levels (NPK)</h4>
+                        <canvas id="nutrientChart" class="h-48"></canvas>
+                    </div>
+
+                    <!-- Soil Records Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">pH
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">N%
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">P%
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">K%
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                        Texture</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Notes
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr th:if="${soilRecords == null || soilRecords.isEmpty()}">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                        <i class="fa-solid fa-flask-vial text-3xl mb-2 block text-gray-300"></i>
+                                        No soil test records yet. Add your first test to start tracking.
+                                    </td>
+                                </tr>
+                                <tr th:each="record : ${soilRecords}" class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900"
+                                        th:text="${#temporals.format(record.testDate, 'MMM dd, yyyy')}">Jan 15, 2024
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.pH}">7.2</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.nitrogen}">2.5</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.phosphorus}">1.8</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.potassium}">2.1</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.texture}">Loam</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.notes}">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Water Records Tab -->
+                <div id="content-water" class="tab-content hidden p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-800">Water Quality History</h3>
+                        <button onclick="document.getElementById('waterModal').classList.remove('hidden')"
+                            class="bg-cyan-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-cyan-700 transition">
+                            <i class="fa-solid fa-plus mr-2"></i>Add Water Test
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">pH
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                        Salinity (ppt)</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                        Turbidity (NTU)</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Source
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                        Quantity</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Notes
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr th:if="${waterRecords == null || waterRecords.isEmpty()}">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                        <i class="fa-solid fa-droplet text-3xl mb-2 block text-gray-300"></i>
+                                        No water quality records yet. Add your first test to start tracking.
+                                    </td>
+                                </tr>
+                                <tr th:each="record : ${waterRecords}" class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900"
+                                        th:text="${#temporals.format(record.testDate, 'MMM dd, yyyy')}">Jan 15, 2024
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.pH}">7.0</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.salinity}">0.5</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.turbidity}">5.0</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.source}">Well</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.quantity}">100</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${record.notes}">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Soil Inputs Tab -->
+                <div id="content-inputs" class="tab-content hidden p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-800">Fertilizer & Amendment History</h3>
+                        <button onclick="document.getElementById('inputModal').classList.remove('hidden')"
+                            class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition">
+                            <i class="fa-solid fa-plus mr-2"></i>Add Input Record
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                        Product</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                        Quantity</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Method
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Cost
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Notes
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr th:if="${soilInputs == null || soilInputs.isEmpty()}">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                        <i class="fa-solid fa-seedling text-3xl mb-2 block text-gray-300"></i>
+                                        No soil input records yet. Add your first application to start tracking.
+                                    </td>
+                                </tr>
+                                <tr th:each="input : ${soilInputs}" class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900"
+                                        th:text="${#temporals.format(input.applicationDate, 'MMM dd, yyyy')}">Jan 15,
+                                        2024</td>
+                                    <td class="px-4 py-3">
+                                        <span th:text="${input.inputType}"
+                                            class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                                            th:classappend="${input.inputType?.name() == 'FERTILIZER' ? 'bg-green-100 text-green-800' : input.inputType?.name() == 'MANURE' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">
+                                            Fertilizer
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${input.productName}">NPK
+                                        15-15-15</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">
+                                        <span th:text="${input.quantity} + ' ' + ${input.unit}">50 kg</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${input.applicationMethod}">
+                                        Broadcast</td>
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900"
+                                        th:text="'$' + ${input.cost}">$120</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600" th:text="${input.notes}">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soil Record Modal -->
+        <div id="soilModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Add Soil Test Record</h3>
+                    <button onclick="document.getElementById('soilModal').classList.add('hidden')"
+                        class="text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form th:action="@{/field/{id}/soil-record/add(id=${field.id})}" th:object="${newSoilRecord}"
+                    method="post" class="p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Test Date *</label>
+                            <input type="date" th:field="*{testDate}" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">pH Level</label>
+                            <input type="number" step="0.1" th:field="*{pH}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nitrogen (N%)</label>
+                            <input type="number" step="0.1" th:field="*{nitrogen}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phosphorus (P%)</label>
+                            <input type="number" step="0.1" th:field="*{phosphorus}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Potassium (K%)</label>
+                            <input type="number" step="0.1" th:field="*{potassium}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Organic Matter (%)</label>
+                            <input type="number" step="0.1" th:field="*{organicMatter}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Texture</label>
+                            <input type="text" th:field="*{texture}" placeholder="e.g., Sandy loam"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+                        <textarea th:field="*{notes}" rows="3"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"></textarea>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit"
+                            class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
+                            Save Test Record
+                        </button>
+                        <button type="button" onclick="document.getElementById('soilModal').classList.add('hidden')"
+                            class="px-6 py-3 border rounded-lg font-semibold hover:bg-gray-50">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Water Record Modal -->
+        <div id="waterModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Add Water Quality Test</h3>
+                    <button onclick="document.getElementById('waterModal').classList.add('hidden')"
+                        class="text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form th:action="@{/field/{id}/water-record/add(id=${field.id})}" th:object="${newWaterRecord}"
+                    method="post" class="p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Test Date *</label>
+                            <input type="date" th:field="*{testDate}" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">pH Level</label>
+                            <input type="number" step="0.1" th:field="*{pH}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Salinity (ppt)</label>
+                            <input type="number" step="0.01" th:field="*{salinity}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Turbidity (NTU)</label>
+                            <input type="number" step="0.1" th:field="*{turbidity}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity (L)</label>
+                            <input type="number" step="0.1" th:field="*{quantity}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Source</label>
+                        <input type="text" th:field="*{source}" placeholder="e.g., Well, River, Municipal"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+                        <textarea th:field="*{notes}" rows="3"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-cyan-500"></textarea>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit"
+                            class="flex-1 bg-cyan-600 text-white py-3 rounded-lg font-semibold hover:bg-cyan-700">
+                            Save Test Record
+                        </button>
+                        <button type="button" onclick="document.getElementById('waterModal').classList.add('hidden')"
+                            class="px-6 py-3 border rounded-lg font-semibold hover:bg-gray-50">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SoilInput Modal -->
+        <div id="inputModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Add Soil Input Record</h3>
+                    <button onclick="document.getElementById('inputModal').classList.add('hidden')"
+                        class="text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form th:action="@{/field/{id}/soil-input/add(id=${field.id})}" th:object="${newSoilInput}"
+                    method="post" class="p-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Application Date *</label>
+                            <input type="date" th:field="*{applicationDate}" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Input Type *</label>
+                            <select th:field="*{inputType}" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select type...</option>
+                                <option value="FERTILIZER">Fertilizer</option>
+                                <option value="MANURE">Manure</option>
+                                <option value="AMENDMENT">Amendment</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Product Name *</label>
+                        <input type="text" th:field="*{productName}" placeholder="e.g., NPK 15-15-15" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity *</label>
+                            <input type="number" step="0.1" th:field="*{quantity}" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Unit *</label>
+                            <input type="text" th:field="*{unit}" placeholder="e.g., kg, liters, bags" required
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Application Method</label>
+                            <input type="text" th:field="*{applicationMethod}" placeholder="e.g., Broadcast, Drip"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Cost ($)</label>
+                            <input type="number" step="0.01" th:field="*{cost}"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+                        <textarea th:field="*{notes}" rows="3"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"></textarea>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit"
+                            class="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700">
+                            Save Input Record
+                        </button>
+                        <button type="button" onclick="document.getElementById('inputModal').classList.add('hidden')"
+                            class="px-6 py-3 border rounded-lg font-semibold hover:bg-gray-50">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <!-- Data Container -->
+        <div id="field-data" hidden th:data-lat="${field.latitude}" th:data-lng="${field.longitude}"
+            th:data-name="${field.name}" th:data-soil-ph-trend="${soilPHTrendJson}"
+            th:data-nutrients="${nutrientLevelsJson}"></div>
+        <!-- Note: We need to ensure the controller provides JSON strings for complex objects, or we need to inline them as JSON string in the data attribute.
+             Thymeleaf's standard expression execution will toString() objects. We might need an ObjectMapper or strict JSON serialization in the controller.
+             Assuming the controller now adds these as JSON strings or we rely on Thymeleaf's javascript inlining features which we are trying to avoid?
+             Actually, we can't use th:inline="javascript" anymore. Use a helper to serialize to JSON in the controller or assume it's already done.
+             Wait, the original code used /*[[${soilPHTrend}]]*/ which uses Thymeleaf's JS inlining to serialize.
+             If I use th:data-*, it's just a string. I need the controller to pass JSON strings.
+             Since I can't easily change the controller right now to return JSON strings without recompiling and potential issues,
+             I will use a ObjectMapper in the template? No, Thymeleaf doesn't have built-in JSON serializer for attributes.
+             
+             Workaround: Use strict JSON format in th:data if possible, or... 
+             The previous inline script relied on Thymeleaf's capable serialization.
+             
+             If I am sticking to "No Inline Scripts", I must pass the data as JSON strings in the data attributes.
+             If the objects are simple, I can try to rely on their toString() if it was JSON, but it's likely not.
+             
+             I should probably modify the controller to add these as JSON attributes?
+             
+             Actually, for now, let's assume the current simple objects are not too complex.
+             But `soilPHTrend` is a list of objects. `nutrientLevels` is an object.
+             
+             If I cannot change the controller easily, I might have to stick to a customized inline script block that ONLY defines the data, 
+             but that defeats the purpose of "No Inline Scripts" for CSP 'unsafe-inline'.
+             
+             However, if I use a nonce, I can keep the data definition inline. 
+             But the goal is to remove it.
+             
+             Let's check if I can use the ObjectMapper bean in Thymeleaf if it's available?
+             Usually `spring` bean is available.
+             
+             th:data-soil-ph-trend="${@objectMapper.writeValueAsString(soilPHTrend)}"
+             
+             This requires `ObjectMapper` bean to be named `objectMapper`. It usually is.
+             Let's try that. It's a robust solution.
+        -->
+        <div id="field-data" hidden th:data-lat="${field.latitude}" th:data-lng="${field.longitude}"
+            th:data-name="${field.name}" th:data-soil-ph-trend="${soilPHTrendJson}"
+            th:data-nutrients="${nutrientLevelsJson}"></div>
+
+        <script th:src="@{/js/field-details.js}"></script>
+    </div>
+</body>
+
+</html>

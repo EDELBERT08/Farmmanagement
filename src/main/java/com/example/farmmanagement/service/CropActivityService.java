@@ -24,4 +24,13 @@ public class CropActivityService {
     public List<CropActivity> getActivitiesByCropId(Long cropId) {
         return activityRepository.findByCropId(cropId);
     }
+
+    public List<CropActivity> getUpcomingTasks() {
+        // Return activities with date in the future or today
+        return activityRepository.findAll().stream()
+                .filter(a -> a.getActivityDate() != null && !a.getActivityDate().isBefore(java.time.LocalDate.now()))
+                .sorted(java.util.Comparator.comparing(CropActivity::getActivityDate))
+                .limit(5)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

@@ -3,87 +3,365 @@
     layout:decorate="~{fragments/layout}">
 
 <head>
-    <title>Field Management</title>
+    <title>Soil & Water Management</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <!-- Leaflet.draw CSS for polygon drawing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+        integrity="sha512-gc3xjCmIy673V6MyOAZhIW93xhM9ei1I+gLbmFjUHIjocENRsLX/QUE1htk5q1XV2D/iie/VQ8DXI6Vu8bexvQ=="
+        crossorigin="anonymous" />
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+    <!-- Leaflet.draw JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"
+        integrity="sha512-ozq8xQKq6urvuU6jNgkfqAmT7jKN2XumbrX1JiB3TnF7tI48DPI4Gy1GXKD/V3EExgAs1V+pRO7vwtS1LHg0Gw=="
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
-
     <div layout:fragment="content">
-        <div class="page-container">
-
-            <!-- Add New Field -->
-            <div class="card-panel">
-                <h3 class="card-title">Add New Field</h3>
-                <form class="modern-form" th:action="@{/field/add}" th:object="${newField}" method="post">
-                    <div class="form-group">
-                        <label for="name">Field Name</label>
-                        <input type="text" class="form-control" id="name" th:field="*{name}"
-                            placeholder="e.g., North Acre" required>
+        <div class="p-8">
+            <!-- Hero Header Section -->
+            <div
+                class="relative overflow-hidden bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 rounded-3xl p-8 mb-8 shadow-xl">
+                <div class="absolute inset-0 opacity-10">
+                    <div
+                        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC40Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')]">
                     </div>
-                    <div class="form-group">
-                        <label for="location">Location / Description</label>
-                        <input type="text" class="form-control" id="location" th:field="*{location}"
-                            placeholder="e.g., Behind the barn">
+                </div>
+                <div class="relative z-10">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h1 class="text-4xl font-bold text-white mb-2 flex items-center gap-3">
+                                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+                                    <i class="fa-solid fa-droplet text-3xl"></i>
+                                </div>
+                                Soil & Water Management
+                            </h1>
+                            <p class="text-green-50 text-lg">Track soil health, water quality, and map your land
+                                boundaries</p>
+                        </div>
+                        <button onclick="showAddModal()"
+                            class="bg-white text-green-600 px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i>
+                            Add New Farm
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="areaSize">Area Size (Acres)</label>
-                        <input type="number" step="0.1" class="form-control" id="areaSize" th:field="*{areaSize}"
-                            placeholder="e.g., 5.0" required>
-                    </div>
-
-                    <button type="submit" class="btn-primary">
-                        <i class="fa-solid fa-map-pin"></i> Add Field
-                    </button>
-                </form>
+                </div>
             </div>
 
-            <!-- Field List -->
-            <div class="card-panel">
-                <h3 class="card-title">Field Registry</h3>
-
-                <div th:if="${fields == null || fields.isEmpty()}" style="text-align:center; padding:2rem; color:#888;">
-                    <i class="fa-solid fa-map" style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"></i>
-                    <p>No fields registered yet.</p>
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Total Sections -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Total Farms</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                            <i class="fa-solid fa-map text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2" th:text="${totalFields}">0</h3>
+                    <p class="text-xs text-gray-500">Master farms + subdivisions</p>
                 </div>
 
-                <div class="table-responsive" th:if="${fields != null && !fields.isEmpty()}">
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Location</th>
-                                <th>Size (Acres)</th>
-                                <th>Current Crops</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="field : ${fields}">
-                                <td style="font-weight:600;" th:text="${field.name}">North Acre</td>
-                                <td th:text="${field.location}">Behind Barn</td>
-                                <td th:text="${field.areaSize}">10.5</td>
-                                <td>
-                                    <span th:if="${field.crops == null || field.crops.isEmpty()}"
-                                        style="color:#888; font-style:italic;">Empty</span>
-                                    <div th:if="${field.crops != null && !field.crops.isEmpty()}">
-                                        <span th:each="crop, iterStat : ${field.crops}"
-                                            th:text="${crop.type} + ${!iterStat.last ? ', ' : ''}" class="status-badge"
-                                            style="background:#e3f2fd; color:#1976D2; margin-right:5px;">Corn</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <a href="#" class="action-btn">
-                                        Manage <i class="fa-solid fa-gear" style="font-size:0.8em;"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Avg Soil pH -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Avg Soil pH</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center">
+                            <i class="fa-solid fa-vial text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2" th:text="${avgSoilPH}">7.0</h3>
+                    <p class="text-xs text-green-600 font-bold">Optimal range</p>
+                </div>
+
+                <!-- Water Quality -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Water Quality</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-50 flex items-center justify-center">
+                            <i class="fa-solid fa-droplet text-cyan-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">Good</h3>
+                    <p class="text-xs text-gray-500">Overall status</p>
+                </div>
+
+                <!-- Total Area -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold">Total Area</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
+                            <i class="fa-solid fa-chart-area text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">
+                        <span th:text="${fields != null ? #aggregates.sum(fields.![areaSize]) : 0}">0</span> acres
+                    </h3>
+                    <p class="text-xs text-gray-500">Managed land</p>
+                </div>
+            </div>
+
+            <!-- Map and Sections Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Interactive Map -->
+                <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-green-600"></i>
+                            Farm Boundaries Map
+                        </h3>
+                    </div>
+                    <div id="map" class="h-96 w-full"></div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6">Farm Health Overview</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                <span class="text-sm font-medium text-gray-700">Excellent</span>
+                            </div>
+                            <span class="text-lg font-bold text-gray-900"
+                                th:text="${fields != null ? fields.size() : 0}">0</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <span class="text-sm font-medium text-gray-700">Moderate</span>
+                            </div>
+                            <span class="text-lg font-bold text-gray-900">0</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-red-50 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <span class="text-sm font-medium text-gray-700">Needs Attention</span>
+                            </div>
+                            <span class="text-lg font-bold text-gray-900">0</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-lightbulb text-blue-600 text-xl mt-1"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 mb-1">Pro Tip</p>
+                                <p class="text-xs text-gray-600">Draw your farm boundaries on the map for accurate area
+                                    calculation!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farms List -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-800">Master Farms</h3>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                            <i class="fa-solid fa-filter mr-1"></i> Filter
+                        </button>
+                        <button class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                            <i class="fa-solid fa-download mr-1"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <div th:if="${fields == null || fields.isEmpty()}" class="p-12 text-center">
+                    <div class="mb-4">
+                        <i class="fa-solid fa-map text-6xl text-gray-300"></i>
+                    </div>
+                    <p class="text-gray-500 text-lg font-medium mb-2">No farms yet</p>
+                    <p class="text-gray-400 text-sm mb-4">Start by adding your first farm and draw its boundaries on the
+                        map</p>
+                    <button onclick="showAddModal()"
+                        class="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition">
+                        <i class="fa-solid fa-plus"></i>
+                        Add First Farm
+                    </button>
+                </div>
+
+                <div th:if="${fields != null && !fields.isEmpty()}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                        <div th:each="field : ${fields}"
+                            class="group bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg hover:border-green-300 transition-all duration-300">
+                            <!-- Mini map placeholder -->
+                            <div
+                                class="h-32 bg-gradient-to-br from-green-100 to-emerald-200 rounded-xl mb-4 flex items-center justify-center relative overflow-hidden">
+                                <i class="fa-solid fa-draw-polygon text-4xl text-green-600 opacity-40"></i>
+                                <div class="absolute top-2 right-2">
+                                    <span class="bg-white/90 px-2 py-1 rounded-md text-xs font-bold text-gray-700"
+                                        th:text="${field.areaSize != null ? field.areaSize + ' acres' : 'N/A'}">5.0
+                                        acres</span>
+                                </div>
+                                <div class="absolute top-2 left-2">
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold">
+                                        <i class="fa-solid fa-house-flag mr-1"></i>Master
+                                    </span>
+                                </div>
+                            </div>
+
+                            <h4 class="text-lg font-bold text-gray-800 mb-2" th:text="${field.name}">North Farm</h4>
+                            <p class="text-sm text-gray-600 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-map-pin text-gray-400"></i>
+                                <span th:text="${field.location}">Behind barn</span>
+                            </p>
+
+                            <!-- Subdivisions Count -->
+                            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                                <p class="text-xs text-gray-600 mb-1">Subdivisions:</p>
+                                <p class="text-2xl font-bold text-blue-600">
+                                    <span
+                                        th:text="${field.subdivisions != null ? field.subdivisions.size() : 0}">0</span>
+                                    <span class="text-xs text-gray-500 font-normal">sections</span>
+                                </p>
+                            </div>
+
+                            <a th:href="@{/field/{id}(id=${field.id})}"
+                                class="flex items-center justify-center gap-2 w-full bg-green-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-green-700 transition group-hover:shadow-lg">
+                                <span>View Details</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
+        <!-- Add Farm Modal with Polygon Drawing -->
+        <div id="addFieldModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div
+                    class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white rounded-t-3xl z-10">
+                    <h3 class="text-2xl font-bold text-gray-800">Add New Master Farm</h3>
+                    <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+                <form th:action="@{/field/add}" th:object="${newField}" method="post" class="p-6" id="addFieldForm">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Farm Name *</label>
+                            <input type="text" th:field="*{name}" id="fieldName"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                placeholder="e.g., Green Valley Farm, North Estate" required>
+                        </div>
+
+                        <!-- Enhanced Drawing Section -->
+                        <div
+                            class="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-2xl p-5">
+                            <div class="flex items-start gap-3 mb-4">
+                                <i class="fa-solid fa-draw-polygon text-purple-600 text-2xl mt-1"></i>
+                                <div class="flex-1">
+                                    <p class="text-base font-bold text-gray-900 mb-1">🗺️ Draw Farm Boundary</p>
+                                    <p class="text-sm text-gray-600">Use the map tools below to sketch your farm's
+                                        actual shape:</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl p-4 mb-4 border-2 border-purple-300">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="bg-purple-100 p-2 rounded-lg">
+                                        <i class="fa-solid fa-info-circle text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-800">Drawing Tools:</p>
+                                        <p class="text-xs text-gray-600">Click the polygon tool, then click points on
+                                            the map to draw your farm boundary</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 text-xs text-gray-600">
+                                    <span class="flex items-center gap-1">
+                                        <i class="fa-solid fa-1"></i> Click to start
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="fa-solid fa-2"></i> Add points
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="fa-solid fa-3"></i> Double-click to finish
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Drawing Map Container -->
+                            <div id="drawingMapContainer" class="mb-4">
+                                <div id="drawingMap" class="h-96 rounded-xl border-4 border-white shadow-lg"></div>
+                            </div>
+
+                            <!-- Area Display -->
+                            <div id="areaDisplay" class="hidden bg-white border-2 border-green-500 rounded-xl p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-green-500 rounded-full p-2">
+                                        <i class="fa-solid fa-check text-white text-lg"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold text-gray-700">Boundary Drawn!</p>
+                                        <p id="calculatedArea" class="text-lg font-bold text-green-600"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" th:field="*{latitude}" id="fieldLatitude">
+                        <input type="hidden" th:field="*{longitude}" id="fieldLongitude">
+                        <input type="hidden" th:field="*{boundaryCoordinates}" id="fieldBoundary">
+                        <input type="hidden" th:field="*{areaSize}" id="fieldAreaSize">
+                        <input type="hidden" th:field="*{isMasterFarm}" value="true">
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Location Description</label>
+                            <input type="text" th:field="*{location}" id="fieldLocation"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                placeholder="e.g., Behind the barn, near the river">
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex gap-3">
+                        <button type="submit" id="submitBtn"
+                            class="flex-1 bg-green-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg hover:shadow-xl">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            Add Master Farm
+                        </button>
+                        <button type="button" onclick="closeAddModal()"
+                            class="px-6 py-3.5 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Data Container for Map -->
+        <div id="farms-data" hidden>
+            <div th:each="field : ${fields}" class="farm-data-item" th:data-boundary="${field.boundaryCoordinates}"
+                th:data-name="${field.name}"></div>
+        </div>
+
+        <!-- Scripts -->
+        <script th:src="@{/js/field-management.js}"></script>
+    </div>
 </body>
 
 </html>

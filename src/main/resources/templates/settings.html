@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Settings</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="px-6 py-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Settings</h1>
+            <p class="text-gray-500 mb-8">Manage your account and farm preferences.</p>
+
+            <div th:if="${success}"
+                class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6"
+                role="alert">
+                <span class="block sm:inline" th:text="${success}">Success message</span>
+            </div>
+            <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
+                role="alert">
+                <span class="block sm:inline" th:text="${error}">Error message</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Location Settings -->
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="bg-blue-100 p-3 rounded-full text-blue-600">
+                            <i class="fa-solid fa-location-dot text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Farm Location</h2>
+                            <p class="text-sm text-gray-500">Set your farm's location for accurate weather data.</p>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/settings/location}" method="post" class="space-y-4">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <!-- Search Section -->
+                        <div class="mb-2 relative">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Search City (Auto-fill)</label>
+                            <div class="relative">
+                                <span
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input type="text" id="citySearch"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    placeholder="Type to search (e.g. London)..." autocomplete="off">
+                                <div id="searchResults"
+                                    class="absolute z-10 w-full bg-white mt-1 rounded-xl shadow-lg border border-gray-100 max-h-60 overflow-y-auto hidden">
+                                    <!-- Results injected here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">City Name</label>
+                            <div class="relative">
+                                <span
+                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fa-solid fa-city"></i>
+                                </span>
+                                <input type="text" name="city" id="cityInput" th:value="${user.city}" required
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    placeholder="e.g. Nairobi">
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">This is for display purposes.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                                <input type="number" step="any" name="latitude" id="latInput"
+                                    th:value="${user.latitude}" required
+                                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    placeholder="-1.2921">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                                <input type="number" step="any" name="longitude" id="lonInput"
+                                    th:value="${user.longitude}" required
+                                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    placeholder="36.8219">
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-xl flex items-start gap-3 text-sm text-blue-800">
+                            <i class="fa-solid fa-circle-info mt-0.5"></i>
+                            <div>
+                                <p class="font-bold mb-1">Need help finding coordinates?</p>
+                                <p>Use the search above or Google Maps.</p>
+                                <button type="button" onclick="detectLocation()"
+                                    class="mt-2 text-blue-600 underline font-semibold hover:text-blue-800">
+                                    <i class="fa-solid fa-crosshairs mr-1"></i> Detect My Current Location
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/30 transition-all">
+                                Save Location
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Account Security -->
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="bg-purple-100 p-3 rounded-full text-purple-600">
+                            <i class="fa-solid fa-shield-halved text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Security</h2>
+                            <p class="text-sm text-gray-500">Update your password.</p>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/settings/password}" method="post" class="space-y-4">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                            <input type="password" name="newPassword" required
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+                                placeholder="••••••••">
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit"
+                                class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl shadow-lg shadow-gray-500/30 transition-all">
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <script th:src="@{/js/settings.js}"></script>
+    </div>
+</body>
+
+</html>
