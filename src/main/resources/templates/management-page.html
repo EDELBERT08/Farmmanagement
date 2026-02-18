@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' - Farm Dashboard'">Management - Farm Dashboard</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+</head>
+<style>
+    /* Basic Reset / Body Styling */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    /* Header Styling */
+    header {
+        background-color: #508D4E; /* Greenish */
+        color: #fff;
+        padding: 1rem 2rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 1.8em;
+    }
+
+    /* Tab Navigation Styling */
+    .tab-nav {
+        background-color: #e2e2e2;
+        padding: 0.5rem 2rem;
+        border-bottom: 3px solid #508D4E; /* Greenish border */
+    }
+
+    .tab-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex; /* Arrange tabs horizontally */
+        gap: 15px; /* Space between tabs */
+    }
+
+    .tab-nav li {
+        display: inline-block; /* Keep items inline */
+    }
+
+    .tab-nav a {
+        display: block;
+        padding: 0.8rem 1.5rem;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        border-radius: 5px 5px 0 0; /* Rounded top corners */
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .tab-nav a:hover {
+        background-color: #d0d0d0;
+        color: #000;
+    }
+
+    /* Style for the active tab */
+    .tab-nav a.active {
+        background-color: #ffffff; /* White background for active */
+        color: #508D4E; /* Greenish text */
+        border-bottom: 3px solid #ffffff; /* Makes it look connected to content */
+        position: relative;
+        top: 3px; /* Align with the bottom border of the nav bar */
+    }
+
+
+    /* Main Content Area Styling */
+    .content {
+        padding: 2rem;
+        background-color: #ffffff;
+        margin: 2rem;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        min-height: 300px; /* Ensure some height */
+    }
+
+    .content h2 {
+        color: #508D4E; /* Greenish */
+        border-bottom: 2px solid #eee;
+        padding-bottom: 0.5rem;
+        margin-top: 0;
+    }
+
+    .management-content button {
+        background-color: #508D4E;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.2s ease;
+    }
+
+    .management-content button:hover {
+         background-color: #40753E; /* Darker green */
+    }
+
+    /* Footer Styling */
+    footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #e2e2e2;
+        color: #555;
+        font-size: 0.9em;
+    }
+</style>
+<body>
+<header>
+    <h1>Farm Management System</h1>
+</header>
+
+<nav class="tab-nav">
+    <ul>
+        <li><a th:href="@{/home}" th:classappend="${activePage == 'home'} ? 'active' : ''">HOME</a></li>
+        <li><a th:href="@{/crop}" th:classappend="${activePage == 'crop'} ? 'active' : ''">CROP MANAGEMENT</a></li>
+        <li><a th:href="@{/animal}" th:classappend="${activePage == 'animal'} ? 'active' : ''">ANIMAL MANAGEMENT</a></li>
+        <li><a th:href="@{/produce}" th:classappend="${activePage == 'produce'} ? 'active' : ''">PRODUCE MANAGEMENT</a></li>
+    </ul>
+</nav>
+
+<main class="content">
+    <h2 th:text="${pageTitle}">Management Section</h2>
+
+    <p>Details and actions for <span th:text="${pageTitle}">this section</span> will appear here.</p>
+
+    <div class="management-content">
+        <button>Add New Item</button>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> Farm Management Solutions</p>
+</footer>
+</body>
+</html>
