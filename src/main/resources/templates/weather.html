@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Weather Forecast</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="p-8">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Weather Forecast</h1>
+                    <p class="text-gray-500 mt-1">Real-time weather updates and forecast for your farm</p>
+                </div>
+                <div
+                    class="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm font-medium text-gray-600">
+                    <i class="fa-solid fa-location-dot text-green-600"></i>
+                    <span id="locationName">Detecting Location...</span>
+                </div>
+            </div>
+
+            <!-- Greeting Banner -->
+            <div class="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-3xl p-6 mb-8 shadow-lg">
+                <div class="flex items-center justify-between text-white">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-1" id="weatherGreetingText">Good day</h2>
+                        <p class="text-blue-100" id="weatherGreetingSubtext">Check today's weather conditions</p>
+                    </div>
+                    <div class="text-6xl opacity-50">
+                        <i id="weatherGreetingIcon" class="fa-solid fa-sun"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- Main Current Weather Card (Left Column) -->
+                <div
+                    class="bg-gradient-to-br from-green-500 to-emerald-700 rounded-[2rem] p-8 text-white shadow-xl lg:col-span-1 relative overflow-hidden min-h-[400px] flex flex-col justify-between">
+                    <!-- Decorative Circles -->
+                    <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white opacity-10"></div>
+                    <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-white opacity-10">
+                    </div>
+
+                    <div class="flex justify-between items-start z-10">
+                        <div
+                            class="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-location-arrow text-xs"></i> <span id="currentLocation">Unknown</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="bg-white text-green-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm">C</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center z-10 py-8">
+                        <img id="weatherIcon" src="https://openweathermap.org/img/wn/02d@4x.png"
+                            class="w-32 h-32 mx-auto drop-shadow-lg" alt="Weather Icon">
+                        <div class="mt-4">
+                            <h2 class="text-7xl font-bold" id="currentTemp">--°</h2>
+                            <p class="text-xl font-medium opacity-90 mt-2" id="weatherDesc">Loading...</p>
+                        </div>
+                        <p class="text-sm opacity-75 mt-4">Feels like <span id="feelsLike">--</span>°</p>
+                    </div>
+
+                    <div class="z-10 bg-black/20 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+                        <div class="flex justify-between items-center text-sm">
+                            <span id="currentDate">Mon, 12th Aug</span>
+                            <span id="currentTime">10:00 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (Highlights & Forecast) -->
+                <div class="lg:col-span-2 space-y-8">
+
+                    <!-- Today's Highlights -->
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Today's Highlight</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+
+                            <!-- Wind -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-green-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">Wind Status</span>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-3xl font-bold text-gray-800"><span id="windSpeed">--</span> <span
+                                            class="text-base font-normal text-gray-500">km/h</span></span>
+                                    <i
+                                        class="fa-solid fa-wind text-2xl text-gray-300 group-hover:text-green-500 transition-colors"></i>
+                                </div>
+                            </div>
+
+                            <!-- Humidity -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-blue-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">Humidity</span>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-3xl font-bold text-gray-800"><span id="humidity">--</span> <span
+                                            class="text-base font-normal text-gray-500">%</span></span>
+                                    <i
+                                        class="fa-solid fa-droplet text-2xl text-gray-300 group-hover:text-blue-500 transition-colors"></i>
+                                </div>
+                                <p class="text-xs text-green-600 mt-2 font-medium" id="humidityStatus">Normal</p>
+                            </div>
+
+                            <!-- UV Index -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-orange-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">UV Index</span>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-3xl font-bold text-gray-800"><span id="uvIndex">--</span> <span
+                                            class="text-base font-normal text-gray-500">UV</span></span>
+                                    <i
+                                        class="fa-solid fa-sun text-2xl text-gray-300 group-hover:text-orange-500 transition-colors"></i>
+                                </div>
+                                <p class="text-xs text-orange-600 mt-2 font-medium" id="uvStatus">Moderate</p>
+                            </div>
+
+                            <!-- Sunrise / Sunset -->
+                            <div class="bg-gray-50 rounded-2xl p-5 hover:bg-yellow-50 transition-colors group">
+                                <span class="text-gray-400 text-sm font-medium block mb-2">Sun & Moon</span>
+                                <div class="flex items-center justify-between mt-2">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                            <i class="fa-regular fa-sun"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-400">Sunrise</p>
+                                            <p class="font-bold text-gray-800" id="sunrise">--:--</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                            <i class="fa-regular fa-moon"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-400">Sunset</p>
+                                            <p class="font-bold text-gray-800" id="sunset">--:--</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 10 Day Forecast -->
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">7 Day Forecast</h3>
+                        <div class="overflow-x-auto pb-4">
+                            <div class="flex gap-4 min-w-max" id="forecastContainer">
+                                <!-- Forecast Item (Template) -->
+                                <div
+                                    class="w-24 flex-shrink-0 bg-white border border-gray-100 rounded-2xl p-4 text-center hover:shadow-md transition-shadow cursor-default">
+                                    <p class="text-sm font-bold text-gray-700 mb-2">Mon</p>
+                                    <img src="https://openweathermap.org/img/wn/10d.png" class="w-10 h-10 mx-auto mb-2"
+                                        alt="icon">
+                                    <p class="font-bold text-gray-800">24°</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Script for Weather Logic -->
+        <!-- Data Container -->
+        <div id="weather-data" hidden th:if="${userLocation != null}" th:data-lat="${userLocation.latitude}"
+            th:data-lon="${userLocation.longitude}" th:data-city="${userLocation.city}"></div>
+
+        <!-- Script -->
+        <script th:src="@{/js/weather.js}"></script>
+    </div>
+</body>
+
+</html>

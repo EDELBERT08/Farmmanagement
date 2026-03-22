@@ -25,4 +25,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    // User Preferences
+    private String city;
+    private Double latitude;
+    private Double longitude;
 }

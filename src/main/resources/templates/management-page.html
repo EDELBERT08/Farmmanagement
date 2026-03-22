@@ -9,19 +9,21 @@
 <body>
 
     <div layout:fragment="content">
-        <div class="page-container">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <div class="card-panel">
-                <h3 class="card-title" th:text="${pageTitle}">Produce Management</h3>
-                <p>Track your harvested produce and inventory here.</p>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4" th:text="${pageTitle}">Produce
+                    Management</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">Track your harvested produce and inventory here.</p>
 
                 <div
-                    style="text-align:center; padding:3rem; background:#f9f9f9; border-radius:8px; border:2px dashed #e0e0e0;">
-                    <i class="fa-solid fa-basket-shopping" style="font-size:4rem; color:#ccc; margin-bottom:1rem;"></i>
-                    <h3 style="color:#666;">Produce Inventory System</h3>
-                    <p style="color:#888;">This module is currently under development.</p>
-                    <button class="btn-primary" style="margin-top:1rem;">
-                        <i class="fa-solid fa-plus"></i> Initialize Inventory
+                    class="text-center p-12 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                    <i class="fa-solid fa-basket-shopping text-6xl text-gray-300 dark:text-gray-500 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Produce Inventory System</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6">This module is currently under development.</p>
+                    <button
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <i class="fa-solid fa-plus mr-2"></i> Initialize Inventory
                     </button>
                 </div>
             </div>

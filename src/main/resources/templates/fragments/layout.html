@@ -6,73 +6,214 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title layout:title-pattern="$CONTENT_TITLE - FarmVista">FarmVista</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+        integrity="sha512-AndVr7cMzu7KgLX8JCzfW4pF6WlASLkNrqEWSb7SnLlLjhiLJjDCiDzGN0PDY/UdXvY9EhXuafIEd1x3g5B9lQ=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script th:src="@{/js/tailwind-config.js}"></script>
+    <style>
+        /* Custom scrollbar for sidebar */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 20px;
+        }
+    </style>
 
     <!-- Optional: specific head content from pages -->
     <th:block layout:fragment="head"></th:block>
 </head>
 
-<body>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased h-screen flex overflow-hidden">
 
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fa-solid fa-seedling"></i>
-            <span>FarmVista</span>
+    <aside
+        class="w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col transition-all duration-300 transform md:translate-x-0 -translate-x-full fixed md:relative z-30 h-full"
+        id="sidebar">
+        <!-- Sidebar content remains same -->
+        <div class="h-20 flex items-center px-8 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="bg-green-100 p-2 rounded-lg">
+                    <i class="fa-solid fa-leaf text-green-600 text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800 tracking-tight">FarmVista</span>
+            </div>
         </div>
-        <nav class="sidebar-menu">
-            <a th:href="@{/home}" class="nav-item" th:classappend="${activePage == 'home'} ? 'active' : ''">
-                <i class="fa-solid fa-gauge-high"></i> Dashboard
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 scrollbar-thin">
+            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Menu</p>
+
+            <a th:href="@{/home}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1"
+                th:classappend="${activePage == 'home'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100' : ''">
+                <i class="fa-solid fa-grid-2 w-6 text-center text-lg mr-3 transition-colors"
+                    th:classappend="${activePage == 'home'} ? 'text-green-600' : 'text-gray-400 group-hover:text-green-600'"></i>
+                <span>Dashboard</span>
             </a>
-            <a th:href="@{/crop}" class="nav-item" th:classappend="${activePage == 'crop'} ? 'active' : ''">
-                <i class="fa-solid fa-wheat-awn"></i> Crop Management
+
+            <a th:href="@{/crop}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1"
+                th:classappend="${activePage == 'crop'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100' : ''">
+                <i class="fa-solid fa-plant-wilt w-6 text-center text-lg mr-3 transition-colors"
+                    th:classappend="${activePage == 'crop'} ? 'text-green-600' : 'text-gray-400 group-hover:text-green-600'"></i>
+                <span>Crop Management</span>
             </a>
-            <a th:href="@{/animal}" class="nav-item" th:classappend="${activePage == 'animal'} ? 'active' : ''">
-                <i class="fa-solid fa-cow"></i> Livestock
+
+            <a th:href="@{/field}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1"
+                th:classappend="${activePage == 'field'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100' : ''">
+                <i class="fa-solid fa-droplet w-6 text-center text-lg mr-3 transition-colors"
+                    th:classappend="${activePage == 'field'} ? 'text-green-600' : 'text-gray-400 group-hover:text-green-600'"></i>
+                <span>Soil & Water</span>
             </a>
-            <a th:href="@{/field}" class="nav-item" th:classappend="${activePage == 'field'} ? 'active' : ''">
-                <i class="fa-solid fa-map-location-dot"></i> Fields
+
+            <!-- Weather (New) -->
+            <a th:href="@{/weather}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1"
+                th:classappend="${activePage == 'weather'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100' : ''">
+                <i class="fa-solid fa-cloud-sun w-6 text-center text-lg mr-3 transition-colors"
+                    th:classappend="${activePage == 'weather'} ? 'text-green-600' : 'text-gray-400 group-hover:text-green-600'"></i>
+                <span>Weather</span>
             </a>
-            <a th:href="@{/produce}" class="nav-item" th:classappend="${activePage == 'produce'} ? 'active' : ''">
-                <i class="fa-solid fa-basket-shopping"></i> Produce
+
+            <a href="#"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">
+                <i
+                    class="fa-solid fa-tractor w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"></i>
+                <span>Equipment</span>
             </a>
+
+            <a href="#"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">
+                <i
+                    class="fa-solid fa-list-check w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"></i>
+                <span>Task Management</span>
+            </a>
+
+            <!-- Labour Management (Admin Only) -->
+            <a th:href="@{/admin/labour}" th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1"
+                th:classappend="${activePage == 'labour'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100' : ''">
+                <i class="fa-solid fa-people-group w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"
+                    th:classappend="${activePage == 'labour'} ? 'text-green-600' : ''"></i>
+                <span>Labour Management</span>
+            </a>
+
+            <a href="#"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">
+                <i
+                    class="fa-solid fa-chart-line w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"></i>
+                <span>Reports & Analytics</span>
+            </a>
+
+            <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 mt-6">Settings</p>
+
+            <a th:href="@{/settings}"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60"
+                th:classappend="${activePage == 'settings'} ? 'bg-green-50 text-green-600 font-semibold shadow-sm ring-1 ring-green-100 opacity-100' : ''">
+                <i class="fa-solid fa-gear w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"
+                    th:classappend="${activePage == 'settings'} ? 'text-green-600' : ''"></i>
+                <span>Settings</span>
+            </a>
+
+
+
+            <a href="#"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">
+                <i
+                    class="fa-regular fa-user w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"></i>
+                <span>My Account</span>
+            </a>
+
+            <a href="#"
+                class="flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-600 transition-all group mb-1 opacity-60">
+                <i
+                    class="fa-regular fa-circle-question w-6 text-center text-lg mr-3 transition-colors text-gray-400 group-hover:text-green-600"></i>
+                <span>Help & Support</span>
+            </a>
+
         </nav>
-        <div class="sidebar-footer">
+
+        <div class="p-4 border-t border-gray-100 mb-2">
             <form th:action="@{/logout}" method="post">
                 <button type="submit"
-                    style="background:none; border:none; color:#d32f2f; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:10px;">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    class="flex items-center w-full px-4 py-3 text-gray-500 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors font-medium group">
+                    <i
+                        class="fa-solid fa-arrow-right-from-bracket w-6 text-center text-lg mr-3 transition-colors group-hover:text-red-600"></i>
+                    <span>Log Out</span>
                 </button>
             </form>
         </div>
     </aside>
 
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
+
     <!-- Main Content Wrapper -->
-    <main class="main-content">
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50/50">
         <!-- Top Header -->
-        <header class="top-header">
-            <div class="header-title">
-                <h2 th:text="${pageTitle != null ? pageTitle : 'Farm Management'}">Page Title</h2>
-                <p>Manage your farm operations efficiently.</p>
+        <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 z-10">
+            <div class="flex items-center flex-1">
+                <button id="sidebar-toggle" class="text-gray-500 hover:text-gray-700 mr-6 md:hidden focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+
+                <!-- Search Bar -->
+                <div class="hidden md:flex items-center w-full max-w-md">
+                    <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                        </span>
+                        <input type="text"
+                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm transition-colors"
+                            placeholder="Search something here...">
+                    </div>
+                </div>
             </div>
-            <div class="header-actions">
-                <div class="user-profile">
-                    <div class="user-avatar">
+
+            <div class="flex items-center space-x-6">
+                <!-- Notifications -->
+                <button class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                </button>
+
+                <!-- User Profile -->
+                <div class="flex items-center gap-3 pl-6 border-l border-gray-100">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-gray-800"
+                            th:text="${#authentication != null ? #authentication.name : 'Guest'}">User</p>
+                        <p class="text-xs text-gray-500">Farm Manager</p>
+                    </div>
+                    <div
+                        class="h-10 w-10 rounded-full bg-green-100 border-2 border-white shadow-sm flex items-center justify-center text-green-700 font-bold">
                         <span
                             th:text="${#authentication != null ? #strings.substring(#authentication.name,0,1) : 'U'}">U</span>
                     </div>
-                    <span th:text="${#authentication != null ? #authentication.name : 'Guest'}"
-                        style="font-weight:600; font-size:0.9rem;">User</span>
+                    <i class="fa-solid fa-chevron-down text-gray-400 text-xs hidden sm:block"></i>
                 </div>
             </div>
         </header>
 
         <!-- Page Content Injected Here -->
-        <div layout:fragment="content"></div>
+        <div class="flex-1 overflow-auto p-4 md:p-8 relative" layout:fragment="content">
+            <!-- Content from other pages will be injected here -->
+        </div>
     </main>
+
+    <script th:src="@{/js/common.js}"></script>
 
 </body>
 

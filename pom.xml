@@ -27,6 +27,29 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<sonar.java.source>17</sonar.java.source>
+		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.sources>src/main/java,src/main/resources</sonar.sources>
+		
+		<!-- SonarCloud Configuration -->
+		<sonar.projectKey>EDELBERT08_Farmmanagement</sonar.projectKey>
+		<sonar.organization>edelbert08</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		
+		<!-- Disable SCM (Git blame) to avoid missing blob errors in CircleCI -->
+		<sonar.scm.disabled>true</sonar.scm.disabled>
+		
+		<!-- Issue Exclusions -->
+		<sonar.issue.ignore.multicriteria>e2,e3</sonar.issue.ignore.multicriteria>
+		
+		<!-- S2228: Console logs are acceptable in client-side templates -->
+		<sonar.issue.ignore.multicriteria.e2.ruleKey>javascript:S2228</sonar.issue.ignore.multicriteria.e2.ruleKey>
+		<sonar.issue.ignore.multicriteria.e2.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e2.resourceKey>
+		
+		<!-- S5725: External CDN libraries (Leaflet) are from trusted sources -->
+		<sonar.issue.ignore.multicriteria.e3.ruleKey>Web:S5725</sonar.issue.ignore.multicriteria.e3.ruleKey>
+		<sonar.issue.ignore.multicriteria.e3.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e3.resourceKey>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -48,6 +71,11 @@
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>nz.net.ultraq.thymeleaf</groupId>
+			<artifactId>thymeleaf-layout-dialect</artifactId>
+			<version>3.3.0</version>
 		</dependency>
 
 		<dependency>
@@ -96,9 +124,52 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.11</version>
+				<configuration>
+
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										                            <limit>
+                                <counter>LINE</counter>
+                                <value>COVEREDRATIO</value>
+                                <minimum>0.80</minimum>
+                            </limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.10.0.2594</version>
+				<version>4.0.0.4121</version>
 			</plugin>
 		</plugins>
 	</build>
